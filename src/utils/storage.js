@@ -168,3 +168,95 @@ export function getCompletedLessonsCount(levelId) {
   return progress.completedLessons[levelId]?.length || 0;
 }
 
+// ============================================
+// FUNCIONES PARA GUARDAR PREFERENCIAS DE UI
+// ============================================
+
+const UI_STORAGE_KEY = "finast-ui-preferences";
+
+/**
+ * Obtiene todas las preferencias de UI guardadas
+ */
+function getUIPreferences() {
+  try {
+    const stored = localStorage.getItem(UI_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error("Error al leer preferencias de UI:", error);
+  }
+  
+  return {};
+}
+
+/**
+ * Guarda las preferencias de UI
+ */
+function saveUIPreferences(preferences) {
+  try {
+    const current = getUIPreferences();
+    const updated = { ...current, ...preferences };
+    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    console.error("Error al guardar preferencias de UI:", error);
+  }
+}
+
+/**
+ * Guarda el estado de minimización de los widgets flotantes
+ */
+export function saveWidgetsState(challengeMinimized, quickActionsMinimized) {
+  saveUIPreferences({
+    widgets: {
+      challengeMinimized,
+      quickActionsMinimized
+    }
+  });
+}
+
+/**
+ * Obtiene el estado de minimización de los widgets flotantes
+ */
+export function getWidgetsState() {
+  const preferences = getUIPreferences();
+  return {
+    challengeMinimized: preferences.widgets?.challengeMinimized || false,
+    quickActionsMinimized: preferences.widgets?.quickActionsMinimized || false
+  };
+}
+
+/**
+ * Guarda la categoría seleccionada en la página de recursos
+ */
+export function saveResourcesCategory(category) {
+  saveUIPreferences({
+    resourcesCategory: category
+  });
+}
+
+/**
+ * Obtiene la categoría seleccionada en la página de recursos
+ */
+export function getResourcesCategory() {
+  const preferences = getUIPreferences();
+  return preferences.resourcesCategory || 'all';
+}
+
+/**
+ * Guarda la categoría seleccionada en la página de inicio
+ */
+export function saveHomeResourcesCategory(category) {
+  saveUIPreferences({
+    homeResourcesCategory: category
+  });
+}
+
+/**
+ * Obtiene la categoría seleccionada en la página de inicio
+ */
+export function getHomeResourcesCategory() {
+  const preferences = getUIPreferences();
+  return preferences.homeResourcesCategory || 'all';
+}
+

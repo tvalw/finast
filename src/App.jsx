@@ -1,12 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Levels from './pages/Levels.jsx';
 import Lesson from './pages/Lesson.jsx';
 import Progress from './pages/Progress.jsx';
 import Profile from './pages/Profile.jsx';
 import Community from './pages/Community.jsx';
+import Resources from './pages/Resources.jsx';
 import { updateStreak } from './utils/storage.js';
 import './App.css';
 
@@ -44,8 +46,10 @@ function App() {
             <Route path="/progress" element={<Progress />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/resources" element={<Resources />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );

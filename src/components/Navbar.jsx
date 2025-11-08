@@ -38,13 +38,14 @@ export default function Navbar() {
           💰 Finast
         </Link>
         
-        <div className="navbar-links">
-          <Link to="/" className="navbar-link">Inicio</Link>
-          <Link to="/levels" className="navbar-link">Niveles</Link>
-          <Link to="/progress" className="navbar-link">Progreso</Link>
-          <Link to="/profile" className="navbar-link">Perfil</Link>
-          <Link to="/community" className="navbar-link">Comunidad</Link>
-        </div>
+              <div className="navbar-links">
+                <Link to="/" className="navbar-link">Inicio</Link>
+                <Link to="/levels" className="navbar-link">Niveles</Link>
+                <Link to="/progress" className="navbar-link">Progreso</Link>
+                <Link to="/resources" className="navbar-link">Recursos</Link>
+                <Link to="/profile" className="navbar-link">Perfil</Link>
+                <Link to="/community" className="navbar-link">Comunidad</Link>
+              </div>
         
         <div className="navbar-controls">
           {/* Toggle de tema */}
