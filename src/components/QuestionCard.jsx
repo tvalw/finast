@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * Componente que muestra una pregunta y permite responderla
@@ -13,6 +13,13 @@ export default function QuestionCard({ question, onAnswer }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+
+  // Resetear el estado cuando cambia la pregunta
+  useEffect(() => {
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setIsCorrect(false);
+  }, [question.id]);
 
   const handleSelect = (index) => {
     if (showResult) return; // No permitir cambiar respuesta después de responder

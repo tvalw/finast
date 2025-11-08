@@ -129,6 +129,7 @@ export default function LessonView() {
       </div>
       
       <QuestionCard 
+        key={currentQuestion.id || currentQuestionIndex}
         question={currentQuestion} 
         onAnswer={handleAnswer}
       />
