@@ -31,14 +31,43 @@ export function isLevelCompleted(levelId) {
 
 /**
  * Desbloquea el siguiente nivel si se completó el actual
+ * Esta función debe llamarse DESPUÉS de marcar una lección como completada
  */
 export function checkAndUnlockNextLevel(completedLevelId) {
-  const nextLevelId = completedLevelId + 1;
-  const nextLevel = levels.find(l => l.id === nextLevelId);
+  // Leer el progreso actualizado después de marcar la lección como completada
+  const progress = getProgress();
+  const level = levels.find(l => l.id === completedLevelId);
   
-  if (nextLevel && isLevelCompleted(completedLevelId)) {
-    unlockLevel(nextLevelId);
-    return true;
+  if (!level) {
+    console.warn(`⚠️ Nivel ${completedLevelId} no encontrado`);
+    return false;
+  }
+  
+  // Verificar si todas las lecciones del nivel están completadas
+  const completedLessons = progress.completedLessons[completedLevelId] || [];
+  const allLessonsCompleted = completedLessons.length === level.lessons.length;
+  
+  console.log(`🔍 Verificando nivel ${completedLevelId}:`, {
+    leccionesCompletadas: completedLessons.length,
+    totalLecciones: level.lessons.length,
+    todasCompletadas: allLessonsCompleted,
+    lecciones: completedLessons
+  });
+  
+  // Si el nivel está completo, desbloquear el siguiente
+  if (allLessonsCompleted) {
+    const nextLevelId = completedLevelId + 1;
+    const nextLevel = levels.find(l => l.id === nextLevelId);
+    
+    if (nextLevel) {
+      unlockLevel(nextLevelId);
+      console.log(`✅ Nivel ${completedLevelId} completado. Nivel ${nextLevelId} desbloqueado.`);
+      return true;
+    } else {
+      console.log(`ℹ️ Nivel ${completedLevelId} completado, pero no hay siguiente nivel.`);
+    }
+  } else {
+    console.log(`⏳ Nivel ${completedLevelId} aún no completado: ${completedLessons.length}/${level.lessons.length} lecciones`);
   }
   
   return false;

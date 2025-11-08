@@ -437,6 +437,80 @@ body {
   gap: 1rem;
 }
 
+/* Lesson Reading View */
+.lesson-reading {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #f9fafb;
+  min-height: calc(100vh - 200px);
+  padding: 2rem 1.5rem;
+}
+
+.lesson-reading-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lesson-reading-card h2 {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.lesson-content {
+  color: #333;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+}
+
+.lesson-content-title {
+  color: #333;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem 0;
+}
+
+.lesson-content p {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.lesson-content-item {
+  margin: 0.75rem 0;
+  padding-left: 1rem;
+  color: #555;
+}
+
+.primary-btn {
+  background: #3BB273;
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: block;
+}
+
+.primary-btn:hover {
+  background: #2d8f5a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+}
+
 /* Progress Page */
 .progress-details {
   margin: 2rem 0;

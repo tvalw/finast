@@ -87,6 +87,11 @@ export function unlockLevel(levelId) {
   if (!progress.unlockedLevels.includes(levelId)) {
     progress.unlockedLevels.push(levelId);
     saveProgress(progress);
+    
+    // Disparar evento para actualizar la UI
+    window.dispatchEvent(new CustomEvent('finast:levelUnlocked', { 
+      detail: { levelId } 
+    }));
   }
 }
 
