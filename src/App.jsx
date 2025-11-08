@@ -5,6 +5,8 @@ import Home from './pages/Home.jsx';
 import Levels from './pages/Levels.jsx';
 import Lesson from './pages/Lesson.jsx';
 import Progress from './pages/Progress.jsx';
+import Profile from './pages/Profile.jsx';
+import Community from './pages/Community.jsx';
 import { updateStreak } from './utils/storage.js';
 import './App.css';
 
@@ -16,6 +18,18 @@ function App() {
   // Actualizar la racha cada vez que se carga la app
   useEffect(() => {
     updateStreak();
+    
+    // Aplicar tema guardado al cargar
+    try {
+      const savedTheme = localStorage.getItem('finast-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (error) {
+      // Ignorar errores
+    }
   }, []);
 
   return (
@@ -28,6 +42,8 @@ function App() {
             <Route path="/levels" element={<Levels />} />
             <Route path="/lesson/:levelId/:lessonId" element={<Lesson />} />
             <Route path="/progress" element={<Progress />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/community" element={<Community />} />
           </Routes>
         </main>
       </div>

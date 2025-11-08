@@ -47,6 +47,17 @@ export default function QuestionCard({ question, onAnswer }) {
     setIsCorrect(correct);
     setShowResult(true);
     
+    // Reproducir sonido de retroalimentación
+    try {
+      const audio = new Audio(correct ? '/assets/sounds/correct.mp3' : '/assets/sounds/error.mp3');
+      audio.volume = 0.3; // Volumen bajo para no ser molesto
+      audio.play().catch(() => {
+        // Ignorar errores si el archivo no existe
+      });
+    } catch (error) {
+      // Ignorar errores de audio
+    }
+    
     // Llamar al callback después de un pequeño delay para que el usuario vea el resultado
     setTimeout(() => {
       onAnswer(correct, question.explanation);

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { levels } from '../data/levels.js';
 import QuestionCard from './QuestionCard.jsx';
+import CelebrationModal from './CelebrationModal.jsx';
 import { 
   addPoints, 
   markLessonCompleted, 
@@ -22,6 +23,7 @@ export default function LessonView() {
   const [level, setLevel] = useState(null);
   const [completed, setCompleted] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     // Buscar el nivel y la lección
@@ -67,6 +69,8 @@ export default function LessonView() {
     // Verificar si se completó el nivel y desbloquear el siguiente
     checkAndUnlockNextLevel(parseInt(levelId));
     
+    // Mostrar modal de celebración
+    setShowCelebration(true);
     setCompleted(true);
   };
 
@@ -93,22 +97,35 @@ export default function LessonView() {
     return <div className="loading">Cargando lección...</div>;
   }
 
+  const handleCloseCelebration = () => {
+    setShowCelebration(false);
+  };
+
   if (completed) {
     return (
-      <div className="lesson-completed">
-        <div className="completion-card">
-          <h2>✅ ¡Lección Completada!</h2>
-          <p>Has ganado {pointsEarned} puntos</p>
-          <div className="completion-actions">
-            <button className="btn btn-primary" onClick={handleNextLesson}>
-              Siguiente lección
-            </button>
-            <button className="btn btn-secondary" onClick={handleBackToLevels}>
-              Volver a niveles
-            </button>
+      <>
+        <CelebrationModal
+          isOpen={showCelebration}
+          onClose={handleCloseCelebration}
+          pointsEarned={pointsEarned}
+          levelId={parseInt(levelId)}
+          lessonId={lessonId}
+        />
+        <div className="lesson-completed">
+          <div className="completion-card">
+            <h2>✅ ¡Lección Completada!</h2>
+            <p>Has ganado {pointsEarned} puntos</p>
+            <div className="completion-actions">
+              <button className="btn btn-primary" onClick={handleNextLesson}>
+                Siguiente lección
+              </button>
+              <button className="btn btn-secondary" onClick={handleBackToLevels}>
+                Volver a niveles
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
