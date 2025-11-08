@@ -24,6 +24,9 @@ export default function QuizFromLesson({ lesson, level }) {
   const [incorrectQuestions, setIncorrectQuestions] = useState([]); // Índices de preguntas incorrectas
   const [isReviewMode, setIsReviewMode] = useState(false); // Modo de repaso de preguntas incorrectas
   const [questionsToShow, setQuestionsToShow] = useState(lesson.questions); // Preguntas que se están mostrando actualmente
+  const [levelUnlocked, setLevelUnlocked] = useState(null); // Nivel desbloqueado (para notificación)
+  const [showLevelUnlockedNotification, setShowLevelUnlockedNotification] = useState(false);
+  const [questionKey, setQuestionKey] = useState(0); // Key para forzar reset del QuestionCard
 
   // Reiniciar estado cuando cambia la lección
   useEffect(() => {
@@ -69,6 +72,29 @@ export default function QuizFromLesson({ lesson, level }) {
       // Si está en modo repaso, remover la pregunta de las incorrectas
       if (isReviewMode) {
         setIncorrectQuestions(prev => prev.filter(idx => idx !== originalIndex));
+        
+        // En modo repaso, solo avanzar si la respuesta es correcta
+        setTimeout(() => {
+          // Verificar si hay más preguntas en la lista actual
+          if (currentQuestionIndex < questionsToShow.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+          } else {
+            // Terminó de revisar todas las incorrectas actuales
+            // El useEffect se encargará de actualizar questionsToShow con las que aún quedan
+            // Si no quedan incorrectas, el useEffect llamará a completeLesson
+            setCurrentQuestionIndex(0);
+          }
+        }, 2000);
+      } else {
+        // Modo normal - avanzar a la siguiente pregunta
+        setTimeout(() => {
+          if (currentQuestionIndex < lesson.questions.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+          } else {
+            // Última pregunta completada, verificar si hay incorrectas
+            checkRemainingIncorrect();
+          }
+        }, 2000);
       }
     } else {
       // Si es incorrecta, agregar a la lista de incorrectas (si no está ya)
@@ -78,30 +104,27 @@ export default function QuizFromLesson({ lesson, level }) {
         }
         return prev;
       });
-    }
-    
-    // Esperar un momento antes de pasar a la siguiente pregunta
-    setTimeout(() => {
-      if (isReviewMode) {
-        // En modo repaso, verificar si hay más preguntas en la lista actual
-        if (currentQuestionIndex < questionsToShow.length - 1) {
-          setCurrentQuestionIndex(prev => prev + 1);
-        } else {
-          // Terminó de revisar todas las incorrectas actuales
-          // El useEffect se encargará de actualizar questionsToShow con las que aún quedan
-          // Si no quedan incorrectas, el useEffect llamará a completeLesson
-          setCurrentQuestionIndex(0);
-        }
+      
+      // En modo repaso, NO avanzar si la respuesta es incorrecta
+      // La pregunta se quedará en pantalla hasta que se responda correctamente
+      if (!isReviewMode) {
+        // En modo normal, avanzar a la siguiente pregunta incluso si es incorrecta
+        setTimeout(() => {
+          if (currentQuestionIndex < lesson.questions.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+          } else {
+            // Última pregunta completada, verificar si hay incorrectas
+            checkRemainingIncorrect();
+          }
+        }, 2000);
       } else {
-        // Modo normal
-        if (currentQuestionIndex < lesson.questions.length - 1) {
-          setCurrentQuestionIndex(prev => prev + 1);
-        } else {
-          // Última pregunta completada, verificar si hay incorrectas
-          checkRemainingIncorrect();
-        }
+        // En modo repaso, si la respuesta es incorrecta, resetear el QuestionCard
+        // para permitir intentar de nuevo sin avanzar
+        setTimeout(() => {
+          setQuestionKey(prev => prev + 1);
+        }, 2000);
       }
-    }, 2000); // 2 segundos para leer la explicación
+    }
   };
 
   const checkRemainingIncorrect = () => {
@@ -123,7 +146,21 @@ export default function QuizFromLesson({ lesson, level }) {
     markLessonCompleted(parseInt(levelId), lessonId);
     
     // Verificar si se completó el nivel y desbloquear el siguiente
-    checkAndUnlockNextLevel(parseInt(levelId));
+    const nextLevelId = parseInt(levelId) + 1;
+    const wasUnlocked = checkAndUnlockNextLevel(parseInt(levelId));
+    
+    // Si se desbloqueó un nuevo nivel, mostrar notificación
+    if (wasUnlocked) {
+      const nextLevel = levels.find(l => l.id === nextLevelId);
+      if (nextLevel) {
+        setLevelUnlocked(nextLevel);
+        setShowLevelUnlockedNotification(true);
+        // Ocultar notificación después de 5 segundos
+        setTimeout(() => {
+          setShowLevelUnlockedNotification(false);
+        }, 5000);
+      }
+    }
     
     // Mostrar modal de celebración
     setShowCelebration(true);
@@ -166,6 +203,20 @@ export default function QuizFromLesson({ lesson, level }) {
     navigate('/levels');
   };
 
+  const handleRepeatLesson = () => {
+    // Reiniciar el estado para repetir la lección
+    setCurrentQuestionIndex(0);
+    setCompleted(false);
+    setPointsEarned(0);
+    setShowCelebration(false);
+    setIncorrectQuestions([]);
+    setIsReviewMode(false);
+    setQuestionsToShow(lesson.questions);
+    setLevelUnlocked(null);
+    setShowLevelUnlockedNotification(false);
+    setQuestionKey(0);
+  };
+
   const handleCloseCelebration = () => {
     setShowCelebration(false);
   };
@@ -180,6 +231,26 @@ export default function QuizFromLesson({ lesson, level }) {
           levelId={parseInt(levelId)}
           lessonId={lessonId}
         />
+        
+        {/* Notificación de nivel desbloqueado */}
+        {showLevelUnlockedNotification && levelUnlocked && (
+          <div className="level-unlocked-notification">
+            <div className="level-unlocked-content">
+              <div className="level-unlocked-icon">🎉</div>
+              <div className="level-unlocked-text">
+                <h3>¡Nuevo Nivel Desbloqueado!</h3>
+                <p>{levelUnlocked.title}</p>
+              </div>
+              <button 
+                className="level-unlocked-close"
+                onClick={() => setShowLevelUnlockedNotification(false)}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="lesson-completed">
           <div className="completion-card">
             <h2>✅ ¡Lección Completada!</h2>
@@ -187,6 +258,9 @@ export default function QuizFromLesson({ lesson, level }) {
             <div className="completion-actions">
               <button className="btn btn-primary" onClick={handleNextLesson}>
                 Siguiente lección
+              </button>
+              <button className="btn btn-secondary" onClick={handleRepeatLesson}>
+                🔄 Repetir lección
               </button>
               <button className="btn btn-secondary" onClick={handleBackToLevels}>
                 Volver a niveles
@@ -235,7 +309,7 @@ export default function QuizFromLesson({ lesson, level }) {
       </div>
       
       <QuestionCard 
-        key={currentQuestion.id || currentQuestionIndex}
+        key={`${currentQuestion.id}-${questionKey}`}
         question={currentQuestion} 
         onAnswer={handleAnswer}
       />

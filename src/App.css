@@ -1929,3 +1929,125 @@ body {
   border-top-color: var(--bg-secondary);
 }
 
+/* Notificación de nivel desbloqueado */
+.level-unlocked-notification {
+  position: fixed;
+  top: 100px;
+  right: 2rem;
+  z-index: 2000;
+  animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.level-unlocked-content {
+  background: linear-gradient(135deg, #00b894 0%, #0984e3 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 300px;
+  max-width: 400px;
+  position: relative;
+  animation: pulseNotification 2s infinite;
+}
+
+@keyframes pulseNotification {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(0, 184, 148, 0.5);
+  }
+}
+
+.level-unlocked-icon {
+  font-size: 3rem;
+  animation: bounceIcon 1s infinite;
+}
+
+@keyframes bounceIcon {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.level-unlocked-text {
+  flex: 1;
+}
+
+.level-unlocked-text h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.level-unlocked-text p {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+.level-unlocked-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.level-unlocked-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Responsive para notificación */
+@media (max-width: 768px) {
+  .level-unlocked-notification {
+    top: 80px;
+    right: 1rem;
+    left: 1rem;
+  }
+
+  .level-unlocked-content {
+    min-width: auto;
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .level-unlocked-icon {
+    font-size: 2rem;
+  }
+
+  .level-unlocked-text h3 {
+    font-size: 1rem;
+  }
+
+  .level-unlocked-text p {
+    font-size: 0.85rem;
+  }
+}
+
