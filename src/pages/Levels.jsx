@@ -1,8 +1,7 @@
-import { levels } from '../data/levels.js';
-import LevelCard from '../components/LevelCard.jsx';
+import LevelMap from '../components/LevelMap.jsx';
 
 /**
- * Página que muestra la lista de todos los niveles disponibles
+ * Página que muestra el mapa visual interactivo de niveles
  */
 export default function Levels() {
   return (
@@ -12,11 +11,7 @@ export default function Levels() {
         Completa las lecciones de cada nivel para desbloquear el siguiente.
       </p>
       
-      <div className="levels-grid">
-        {levels.map(level => (
-          <LevelCard key={level.id} level={level} />
-        ))}
-      </div>
+      <LevelMap />
     </div>
   );
 }

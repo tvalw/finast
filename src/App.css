@@ -1383,3 +1383,549 @@ body {
   }
 }
 
+/* ============================================
+   MAPA VISUAL DE NIVELES (ESTILO DUOLINGO)
+   ============================================ */
+
+.level-map-container {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 16px;
+  margin-top: 2rem;
+}
+
+/* Header con progreso global */
+.level-map-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.progress-summary h2 {
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.global-progress-bar {
+  width: 100%;
+  max-width: 600px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  margin: 0 auto;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.global-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00b894 0%, #0984e3 100%);
+  border-radius: 15px;
+  transition: width 0.6s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.global-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.progress-text {
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Contenedor del mapa */
+.level-map {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+  position: relative;
+}
+
+/* Columna de nivel */
+.level-column {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  animation: fadeInUp 0.6s ease;
+}
+
+.level-column.locked {
+  opacity: 0.6;
+}
+
+.level-column.completed {
+  position: relative;
+}
+
+.level-column.completed::before {
+  content: '🎉';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  font-size: 2rem;
+  animation: bounce 1s infinite;
+  z-index: 10;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Encabezado del nivel */
+.level-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.level-title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.level-title {
+  color: #333;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.level-completed-badge {
+  font-size: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+.level-locked-icon {
+  font-size: 1.2rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.level-description {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+.level-progress-text {
+  color: #00b894;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* Ruta de lecciones */
+.lessons-path {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Contenedor de nodo de lección */
+.lesson-node-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+/* Conector entre lecciones */
+.lesson-connector {
+  width: 4px;
+  height: 60px;
+  background: #e0e0e0;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.lesson-connector.completed {
+  background: linear-gradient(180deg, #00b894 0%, #00b894 100%);
+  box-shadow: 0 0 8px rgba(0, 184, 148, 0.4);
+}
+
+.lesson-connector.available {
+  background: linear-gradient(180deg, #0984e3 0%, #0984e3 100%);
+  animation: pulseLine 2s infinite;
+}
+
+.lesson-connector.locked {
+  background: #e0e0e0;
+  opacity: 0.5;
+}
+
+@keyframes pulseLine {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Nodo de lección */
+.lesson-node {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  background: white;
+  border: 4px solid;
+}
+
+.lesson-node.completed {
+  background: #00b894;
+  border-color: #00b894;
+  animation: completedPulse 2s infinite;
+}
+
+.lesson-node.completed:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 184, 148, 0.5);
+}
+
+.lesson-node.available {
+  background: #0984e3;
+  border-color: #0984e3;
+  animation: availableFloat 3s ease-in-out infinite;
+}
+
+.lesson-node.available:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(9, 132, 227, 0.5);
+}
+
+.lesson-node.locked {
+  background: #e0e0e0;
+  border-color: #b0b0b0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.lesson-node.hovered {
+  transform: scale(1.1);
+}
+
+@keyframes completedPulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(0, 184, 148, 0.6);
+  }
+}
+
+@keyframes availableFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Efecto de pulso para lecciones disponibles */
+.lesson-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #0984e3;
+  animation: pulseRing 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Ícono de lección */
+.lesson-icon {
+  font-size: 2rem;
+  z-index: 1;
+}
+
+/* Tooltip de lección */
+.lesson-tooltip {
+  position: absolute;
+  bottom: 90px;
+  background: #333;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+.lesson-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #333;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Conector entre niveles */
+.level-connector {
+  width: 4px;
+  height: 80px;
+  position: relative;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.level-connector-line {
+  width: 100%;
+  height: 100%;
+  background: #e0e0e0;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.level-connector.completed .level-connector-line {
+  background: linear-gradient(180deg, #00b894 0%, #0984e3 100%);
+  box-shadow: 0 0 12px rgba(0, 184, 148, 0.4);
+}
+
+.level-connector-arrow {
+  position: absolute;
+  bottom: -10px;
+  font-size: 1.5rem;
+  color: #00b894;
+  animation: arrowBounce 1.5s infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+/* Botón flotante de inicio */
+.floating-home-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00b894 0%, #0984e3 100%);
+  color: white;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-home-button:hover {
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+}
+
+.floating-home-button:active {
+  transform: scale(0.95);
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+  .level-map-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .level-column {
+    max-width: 100%;
+  }
+
+  .level-header {
+    padding: 1rem;
+  }
+
+  .level-title {
+    font-size: 1.2rem;
+  }
+
+  .lesson-node {
+    width: 60px;
+    height: 60px;
+  }
+
+  .lesson-icon {
+    font-size: 1.5rem;
+  }
+
+  .lesson-connector {
+    height: 50px;
+  }
+
+  .level-connector {
+    height: 60px;
+  }
+
+  .floating-home-button {
+    bottom: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .progress-summary h2 {
+    font-size: 1.4rem;
+  }
+
+  .global-progress-bar {
+    height: 25px;
+  }
+}
+
+/* Modo oscuro para el mapa */
+.dark .level-map-container {
+  background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+}
+
+.dark .level-header {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark .level-title {
+  color: var(--text-primary);
+}
+
+.dark .level-description {
+  color: var(--text-secondary);
+}
+
+.dark .lesson-node {
+  background: var(--bg-secondary);
+}
+
+.dark .lesson-node.completed {
+  background: #00b894;
+}
+
+.dark .lesson-node.available {
+  background: #0984e3;
+}
+
+.dark .lesson-node.locked {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+.dark .lesson-tooltip {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark .lesson-tooltip::after {
+  border-top-color: var(--bg-secondary);
+}
+

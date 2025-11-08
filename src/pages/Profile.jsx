@@ -177,11 +177,6 @@ export default function Profile() {
             <div className="stat-value">{progress.points}</div>
             <div className="stat-label">Puntos</div>
           </div>
-          <div className="stat-card">
-            <div className="stat-icon">📊</div>
-            <div className="stat-value">{progress.levelName}</div>
-            <div className="stat-label">Nivel</div>
-          </div>
         </div>
 
         {/* Insignias */}

@@ -10,15 +10,6 @@ export default function ProgressPanel() {
   // Calcular el nivel más alto desbloqueado
   const highestLevel = Math.max(...progress.unlockedLevels, 1);
   
-  /**
-   * Obtiene el nombre del nivel del usuario basado en sus puntos
-   */
-  function getLevelName(points) {
-    if (points < 50) return "Novato 💡";
-    if (points < 150) return "Intermedio 💪";
-    return "Experto 💰";
-  }
-  
   return (
     <div className="progress-panel">
       <h3>Mi Progreso</h3>
@@ -48,10 +39,6 @@ export default function ProgressPanel() {
         <div className="stat-item">
           <div className="stat-value">📚 {highestLevel}</div>
           <div className="stat-label">Nivel alcanzado</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-value">{getLevelName(progress.points)}</div>
-          <div className="stat-label">Nivel actual</div>
         </div>
       </div>
     </div>
