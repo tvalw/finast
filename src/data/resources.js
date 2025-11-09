@@ -10,12 +10,12 @@ export const financialResources = [
   {
     id: 1,
     category: "documentation",
-    title: "Guía de Ahorro para Principiantes",
+    title: "Guía de preparación financiera para principiantes",
     type: "pdf",
-    description: "PDF descargable con estrategias básicas de ahorro y consejos prácticos",
-    link: "https://www.bancodechile.cl/wps/wcm/connect/banco-de-chile/banco-de-chile/educacion-financiera/ahorro/guia-ahorro",
+    description: "PDF descargable con estrategias básicas de ahorro y consejos prácticos,",
+    link: "https://www.du.edu/sites/g/files/lmucqz251/files/2018-07/YSYSYF_Spanish.pdf",
     level: "Principiante",
-    duration: "15 min",
+    duration: "45 min",
     icon: "📄"
   },
   {
@@ -24,7 +24,7 @@ export const financialResources = [
     title: "Manual de Presupuesto Personal",
     type: "pdf",
     description: "Guía completa para crear y mantener un presupuesto efectivo",
-    link: "https://www.cmfchile.cl/portal/educacion/605/w3-article-20247.html",
+    link: "https://educa.banxico.org.mx/recursos/pdf/%7B32B1AE7B-9524-8942-980D-878CAEACAC9B%7D.pdf",
     level: "Principiante",
     duration: "20 min",
     icon: "📊"
@@ -32,12 +32,12 @@ export const financialResources = [
   {
     id: 3,
     category: "documentation",
-    title: "Guía de Inversión Básica",
+    title: "Planificación para la inversión",
     type: "pdf",
     description: "Introducción a los conceptos fundamentales de inversión",
-    link: "https://www.svs.cl/portal/educacion/605/w3-article-20247.html",
+    link: "https://www.sernac.cl/portal/607/articles-9174_archivo_01.pdf://www.svs.cl/portal/educacion/605/w3-article-20247.html",
     level: "Intermedio",
-    duration: "30 min",
+    duration: "45 min",
     icon: "📈"
   },
 
@@ -45,12 +45,12 @@ export const financialResources = [
   {
     id: 4,
     category: "videos",
-    title: "Cómo Crear un Presupuesto Efectivo",
+    title: "Cómo crear un Presupuesto desde cero",
     type: "youtube",
     description: "Video tutorial paso a paso para crear tu primer presupuesto",
-    link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    link: "https://youtu.be/E0ZZQKa5Y5s?si=R1_QL-HFpn6qz3Fa",
     level: "Principiante",
-    duration: "10 min",
+    duration: "15 min",
     icon: "🎥"
   },
   {
@@ -59,20 +59,20 @@ export const financialResources = [
     title: "Ahorro e Inversión: Conceptos Básicos",
     type: "youtube",
     description: "Explicación clara sobre la diferencia entre ahorrar e invertir",
-    link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    link: "https://youtu.be/cQP5X1Uo4xw?si=I6BdLX6ljMwj9hvO",
     level: "Principiante",
-    duration: "15 min",
+    duration: "5 min",
     icon: "🎥"
   },
   {
     id: 6,
     category: "videos",
-    title: "Cómo Pagar Deudas de Forma Inteligente",
+    title: "Cómo pagar deudas de forma inteligente",
     type: "youtube",
     description: "Estrategias para eliminar deudas de manera eficiente",
-    link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    link: "https://youtu.be/oV41pUvUYgk?si=A7peTpXWlvKE_sTO",
     level: "Intermedio",
-    duration: "12 min",
+    duration: "10 min",
     icon: "🎥"
   },
 
@@ -80,10 +80,10 @@ export const financialResources = [
   {
     id: 7,
     category: "podcasts",
-    title: "Educación Financiera para Todos",
+    title: "Finanzas para Todos",
     type: "audio",
     description: "Episodio sobre conceptos financieros básicos y su importancia",
-    link: "https://open.spotify.com/show/4rOoJ6Egrf8K2IrywzwOMk",
+    link: "https://open.spotify.com/show/2eMvWEPvRtku1rNzvAEeQe?si=98546fe7fddb45b1",
     level: "Principiante",
     duration: "25 min",
     icon: "🎧"
@@ -91,7 +91,7 @@ export const financialResources = [
   {
     id: 8,
     category: "podcasts",
-    title: "Inversiones para Principiantes",
+    title: "Neurona Financiera: Finanzas personales e Inversiones",
     type: "audio",
     description: "Todo lo que necesitas saber para empezar a invertir",
     link: "https://open.spotify.com/show/4rOoJ6Egrf8K2IrywzwOMk",
@@ -102,12 +102,12 @@ export const financialResources = [
   {
     id: 9,
     category: "podcasts",
-    title: "Planificación Financiera a Largo Plazo",
+    title: "Con Peras y Finazas",
     type: "audio",
-    description: "Cómo planificar tu futuro financiero y alcanzar tus metas",
+    description: "Aprenderás a manejar tus finanzas personales para comenzar a armar tu patrimonio o emprender en un nuevo proyecto. Planificar tu futuro financiero y alcanzar tus metas",
     link: "https://open.spotify.com/show/4rOoJ6Egrf8K2IrywzwOMk",
     level: "Avanzado",
-    duration: "35 min",
+    duration: "90 min",
     icon: "🎧"
   },
 
@@ -118,9 +118,9 @@ export const financialResources = [
     title: "Calculadora de Presupuesto",
     type: "tool",
     description: "Herramienta interactiva para calcular tu presupuesto mensual",
-    link: "https://www.calculadora-presupuesto.com",
+    link: "https://www.finanzasparatodos.es/herramientas/mipresupuesto",
     level: "Principiante",
-    duration: "5 min",
+    duration: "10 min",
     icon: "🧮"
   },
   {
@@ -129,18 +129,18 @@ export const financialResources = [
     title: "Plantilla de Presupuesto Excel",
     type: "excel",
     description: "Descarga una plantilla lista para usar y personalizar",
-    link: "https://www.example.com/plantilla-presupuesto.xlsx",
-    level: "Principiante",
-    duration: "10 min",
+    link: "https://prousuario.gob.do/educacion-financiera/calculadoras-financieras/plantilla-de-presupuesto/",
+    level: "Intermedio",
+    duration: "20 min",
     icon: "📋"
   },
   {
     id: 12,
     category: "tools",
-    title: "Simulador de Inversiones",
+    title: "Calculadora de Ahorro",
     type: "tool",
-    description: "Calcula cuánto puedes ganar con diferentes estrategias de inversión",
-    link: "https://www.simulador-inversiones.com",
+    description: "Calculadora para saber cuánto debo ahorrar para reunir un monto",
+    link: "https://servicios.cmfchile.cl/simuladorcuantonecesitoahorrar/aplicacion?indice=101.5.1",
     level: "Intermedio",
     duration: "15 min",
     icon: "💹"
@@ -153,8 +153,8 @@ export const financialResources = [
     title: "Padre Rico, Padre Pobre",
     type: "book",
     description: "Clásico de educación financiera personal de Robert Kiyosaki",
-    link: "https://www.amazon.com/Padre-Rico-Padre-Pobre-Spanish/dp/1603961813",
-    level: "Principiante",
+    link: "https://www.jugandoainvertir.com.ar/descargas/Padre-Rico-Padre-Pobre.pdf",
+    level: "Intermedio",
     duration: "6 horas",
     icon: "📚"
   },
@@ -164,7 +164,7 @@ export const financialResources = [
     title: "El Inversor Inteligente",
     type: "book",
     description: "Guía de inversión en valor por Benjamin Graham",
-    link: "https://www.amazon.com/Inversor-Inteligente-Spanish-Benjamin-Graham/dp/0060555661",
+    link: "https://www.jugandoainvertir.com.ar/descargas/El_Inversor_Inteligente.pdf",
     level: "Avanzado",
     duration: "8 horas",
     icon: "📚"
@@ -172,10 +172,10 @@ export const financialResources = [
   {
     id: 15,
     category: "books",
-    title: "Hábitos Financieros Exitosos",
+    title: "Aprende a ahorrar",
     type: "book",
-    description: "Cómo desarrollar hábitos que transformen tu vida financiera",
-    link: "https://www.amazon.com/Habitos-Financieros-Exitosos-Spanish/dp/1234567890",
+    description: "Recetas y consejos para conseguir ahorrar y posteriormente acertar con tus inversione",
+    link: "https://www.buscalibre.cl/libro-aprende-a-ahorrar-de-inaki-jimenez-largo-ediciones-piramide/9788436849677/p/62009382",
     level: "Intermedio",
     duration: "5 horas",
     icon: "📚"
@@ -199,7 +199,7 @@ export const financialResources = [
     title: "Inversiones para Principiantes",
     type: "course",
     description: "Aprende a invertir desde cero con este curso práctico",
-    link: "https://www.edx.org/course/inversiones-principiantes",
+    link: "https://www.edx.org/es/aprende/inversiones",
     level: "Intermedio",
     duration: "6 semanas",
     icon: "🎓"
@@ -210,7 +210,7 @@ export const financialResources = [
     title: "Planificación Financiera Avanzada",
     type: "course",
     description: "Estrategias avanzadas para planificar tu futuro financiero",
-    link: "https://www.udemy.com/course/planificacion-financiera-avanzada",
+    link: "https://www.udemy.com/course/planificacion-financiera-estados-financieros-presupuestados/",
     level: "Avanzado",
     duration: "8 semanas",
     icon: "🎓"
