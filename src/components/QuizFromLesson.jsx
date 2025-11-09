@@ -103,6 +103,9 @@ export default function QuizFromLesson({ lesson, level }) {
           ? [...prev, originalIndex]
           : prev;
         
+        // Guardar el valor actualizado para usarlo en el setTimeout
+        const finalIncorrectList = updated;
+        
         // En modo repaso, NO avanzar si la respuesta es incorrecta
         // La pregunta se quedará en pantalla hasta que se responda correctamente
         if (isReviewMode) {
@@ -112,24 +115,32 @@ export default function QuizFromLesson({ lesson, level }) {
             setQuestionKey(prevKey => prevKey + 1);
           }, 2000);
         } else {
-          // En modo normal, avanzar a la siguiente pregunta incluso si es incorrecta
+          // En modo normal, si la respuesta es incorrecta, avanzar a la siguiente pregunta
+          // La pregunta incorrecta se repetirá al final de la lección
           setTimeout(() => {
-            if (currentQuestionIndex < lesson.questions.length - 1) {
-              setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-            } else {
-              // Última pregunta completada, verificar si hay incorrectas
-              // Usar el estado actualizado 'updated' para verificar
-              if (updated.length > 0) {
-                // Crear array de preguntas incorrectas para mostrar
-                const incorrectQuestionsList = updated.map(idx => lesson.questions[idx]);
-                setQuestionsToShow(incorrectQuestionsList);
-                setCurrentQuestionIndex(0);
-                setIsReviewMode(true);
+            // Resetear el QuestionCard para permitir avanzar
+            setQuestionKey(prevKey => prevKey + 1);
+            
+            // Usar función de actualización para obtener el índice actual correcto
+            setCurrentQuestionIndex(prevIndex => {
+              if (prevIndex < lesson.questions.length - 1) {
+                return prevIndex + 1;
               } else {
-                // No hay incorrectas, completar lección
-                completeLesson();
+                // Última pregunta completada, verificar si hay incorrectas
+                // Usar el valor guardado 'finalIncorrectList' para verificar
+                if (finalIncorrectList.length > 0) {
+                  // Crear array de preguntas incorrectas para mostrar
+                  const incorrectQuestionsList = finalIncorrectList.map(idx => lesson.questions[idx]);
+                  setQuestionsToShow(incorrectQuestionsList);
+                  setIsReviewMode(true);
+                  return 0; // Resetear al inicio del modo repaso
+                } else {
+                  // No hay incorrectas, completar lección
+                  completeLesson();
+                  return prevIndex;
+                }
               }
-            }
+            });
           }, 2000);
         }
         
@@ -293,6 +304,11 @@ export default function QuizFromLesson({ lesson, level }) {
   
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
+  // Si no hay pregunta actual, mostrar loading
+  if (!currentQuestion) {
+    return <div className="loading">Cargando pregunta...</div>;
+  }
+
   return (
     <div className="lesson-view">
       <div className="lesson-header">
@@ -320,7 +336,7 @@ export default function QuizFromLesson({ lesson, level }) {
       </div>
       
       <QuestionCard 
-        key={`${currentQuestion.id}-${questionKey}`}
+        key={`${currentQuestion.id}-${questionKey}-${isReviewMode ? 'review' : 'normal'}`}
         question={currentQuestion} 
         onAnswer={handleAnswer}
       />
