@@ -260,3 +260,17 @@ export function getHomeResourcesCategory() {
   return preferences.homeResourcesCategory || 'all';
 }
 
+/**
+ * Obtiene todos los feedbacks guardados de los niveles
+ * @returns {Array} Array de objetos con feedback de niveles
+ */
+export function getLevelFeedbacks() {
+  try {
+    const feedbacks = localStorage.getItem('finast-level-feedbacks');
+    return feedbacks ? JSON.parse(feedbacks) : [];
+  } catch (error) {
+    console.error("Error al leer los feedbacks:", error);
+    return [];
+  }
+}
+

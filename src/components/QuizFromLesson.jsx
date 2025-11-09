@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import QuestionCard from './QuestionCard.jsx';
 import CelebrationModal from './CelebrationModal.jsx';
+import LevelFeedbackModal from './LevelFeedbackModal.jsx';
 import { levels } from '../data/levels.js';
 import { 
   addPoints, 
   markLessonCompleted
 } from '../utils/storage.js';
-import { checkAndUnlockNextLevel } from '../utils/progress.js';
+import { checkAndUnlockNextLevel, isLevelCompleted } from '../utils/progress.js';
 
 /**
  * Componente que maneja el quiz de una lección
@@ -27,6 +28,8 @@ export default function QuizFromLesson({ lesson, level }) {
   const [levelUnlocked, setLevelUnlocked] = useState(null); // Nivel desbloqueado (para notificación)
   const [showLevelUnlockedNotification, setShowLevelUnlockedNotification] = useState(false);
   const [questionKey, setQuestionKey] = useState(0); // Key para forzar reset del QuestionCard
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false); // Modal de feedback
+  const [levelJustCompleted, setLevelJustCompleted] = useState(false); // Si el nivel se acaba de completar
 
   // Reiniciar estado cuando cambia la lección
   useEffect(() => {
@@ -168,8 +171,12 @@ export default function QuizFromLesson({ lesson, level }) {
     markLessonCompleted(parseInt(levelId), lessonId);
     
     // Verificar si se completó el nivel y desbloquear el siguiente
-    const nextLevelId = parseInt(levelId) + 1;
-    const wasUnlocked = checkAndUnlockNextLevel(parseInt(levelId));
+    const currentLevelId = parseInt(levelId);
+    const nextLevelId = currentLevelId + 1;
+    const wasUnlocked = checkAndUnlockNextLevel(currentLevelId);
+    
+    // Verificar si el nivel se acaba de completar
+    const levelCompleted = isLevelCompleted(currentLevelId);
     
     // Si se desbloqueó un nuevo nivel, mostrar notificación
     if (wasUnlocked) {
@@ -182,6 +189,15 @@ export default function QuizFromLesson({ lesson, level }) {
           setShowLevelUnlockedNotification(false);
         }, 5000);
       }
+    }
+    
+    // Si el nivel se completó, mostrar modal de feedback después de un breve delay
+    if (levelCompleted) {
+      setLevelJustCompleted(true);
+      // Mostrar feedback después de que se muestre la celebración
+      setTimeout(() => {
+        setShowFeedbackModal(true);
+      }, 1500);
     }
     
     // Mostrar modal de celebración
@@ -244,6 +260,8 @@ export default function QuizFromLesson({ lesson, level }) {
   };
 
   if (completed) {
+    const currentLevel = levels.find(l => l.id === parseInt(levelId));
+    
     return (
       <>
         <CelebrationModal
@@ -253,6 +271,19 @@ export default function QuizFromLesson({ lesson, level }) {
           levelId={parseInt(levelId)}
           lessonId={lessonId}
         />
+        
+        {/* Modal de feedback cuando se completa un nivel */}
+        {levelJustCompleted && currentLevel && (
+          <LevelFeedbackModal
+            isOpen={showFeedbackModal}
+            onClose={() => {
+              setShowFeedbackModal(false);
+              setLevelJustCompleted(false);
+            }}
+            levelId={parseInt(levelId)}
+            levelTitle={currentLevel.title}
+          />
+        )}
         
         {/* Notificación de nivel desbloqueado */}
         {showLevelUnlockedNotification && levelUnlocked && (
