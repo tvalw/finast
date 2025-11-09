@@ -99,31 +99,42 @@ export default function QuizFromLesson({ lesson, level }) {
     } else {
       // Si es incorrecta, agregar a la lista de incorrectas (si no está ya)
       setIncorrectQuestions(prev => {
-        if (!prev.includes(originalIndex)) {
-          return [...prev, originalIndex];
+        const updated = !prev.includes(originalIndex) 
+          ? [...prev, originalIndex]
+          : prev;
+        
+        // En modo repaso, NO avanzar si la respuesta es incorrecta
+        // La pregunta se quedará en pantalla hasta que se responda correctamente
+        if (isReviewMode) {
+          // En modo repaso, si la respuesta es incorrecta, resetear el QuestionCard
+          // para permitir intentar de nuevo sin avanzar
+          setTimeout(() => {
+            setQuestionKey(prevKey => prevKey + 1);
+          }, 2000);
+        } else {
+          // En modo normal, avanzar a la siguiente pregunta incluso si es incorrecta
+          setTimeout(() => {
+            if (currentQuestionIndex < lesson.questions.length - 1) {
+              setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+            } else {
+              // Última pregunta completada, verificar si hay incorrectas
+              // Usar el estado actualizado 'updated' para verificar
+              if (updated.length > 0) {
+                // Crear array de preguntas incorrectas para mostrar
+                const incorrectQuestionsList = updated.map(idx => lesson.questions[idx]);
+                setQuestionsToShow(incorrectQuestionsList);
+                setCurrentQuestionIndex(0);
+                setIsReviewMode(true);
+              } else {
+                // No hay incorrectas, completar lección
+                completeLesson();
+              }
+            }
+          }, 2000);
         }
-        return prev;
+        
+        return updated;
       });
-      
-      // En modo repaso, NO avanzar si la respuesta es incorrecta
-      // La pregunta se quedará en pantalla hasta que se responda correctamente
-      if (!isReviewMode) {
-        // En modo normal, avanzar a la siguiente pregunta incluso si es incorrecta
-        setTimeout(() => {
-          if (currentQuestionIndex < lesson.questions.length - 1) {
-            setCurrentQuestionIndex(prev => prev + 1);
-          } else {
-            // Última pregunta completada, verificar si hay incorrectas
-            checkRemainingIncorrect();
-          }
-        }, 2000);
-      } else {
-        // En modo repaso, si la respuesta es incorrecta, resetear el QuestionCard
-        // para permitir intentar de nuevo sin avanzar
-        setTimeout(() => {
-          setQuestionKey(prev => prev + 1);
-        }, 2000);
-      }
     }
   };
 

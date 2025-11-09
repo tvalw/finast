@@ -10,6 +10,7 @@ import { getUser } from '../data/user.js';
 import { getDailyStats, getCurrentLesson, getCurrentLessonProgress, getRecommendations } from '../utils/homeCalculations.js';
 import { financialResources, getResourcesByCategory, getCategories, getCategoryName } from '../data/resources.js';
 import { getHomeResourcesCategory, saveHomeResourcesCategory } from '../utils/storage.js';
+import { getRandomTip } from '../data/financialTips.js';
 
 /**
  * Página de inicio rediseñada con diseño moderno estilo Duolingo
@@ -22,6 +23,7 @@ export default function Home() {
   const [recommendations, setRecommendations] = useState(() => getRecommendations());
   const [user, setUser] = useState(() => getUser());
   const [selectedCategory, setSelectedCategory] = useState(() => getHomeResourcesCategory());
+  const [dailyTip, setDailyTip] = useState(() => getRandomTip());
 
   // Guardar categoría seleccionada en localStorage
   useEffect(() => {
@@ -67,6 +69,25 @@ export default function Home() {
         </div>
         
         <DailyStats stats={stats} />
+      </section>
+
+      {/* Consejo Rápido del Día */}
+      <section className="quick-tip-section">
+        <div className="quick-tip-card">
+          <div className="quick-tip-header">
+            <span className="tip-emoji">{dailyTip.emoji}</span>
+            <h3 className="tip-title">💡 Consejo Rápido</h3>
+            <button 
+              className="tip-refresh-btn" 
+              onClick={() => setDailyTip(getRandomTip())}
+              title="Ver otro consejo"
+              aria-label="Ver otro consejo"
+            >
+              🔄
+            </button>
+          </div>
+          <p className="tip-content">{dailyTip.tip}</p>
+        </div>
       </section>
 
       {/* Grid Principal */}
