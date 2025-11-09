@@ -9,6 +9,7 @@ import Progress from './pages/Progress.jsx';
 import Profile from './pages/Profile.jsx';
 import Community from './pages/Community.jsx';
 import Resources from './pages/Resources.jsx';
+import About from './pages/About.jsx';
 import { updateStreak } from './utils/storage.js';
 import './App.css';
 
@@ -47,6 +48,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/community" element={<Community />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </main>
         <Footer />

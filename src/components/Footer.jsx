@@ -52,7 +52,7 @@ export default function Footer() {
           <div className="footer-section">
             <h4 className="footer-title">Información</h4>
             <ul className="footer-links">
-              <li><a href="#about" onClick={(e) => e.preventDefault()}>Acerca de Finast</a></li>
+              <li><Link to="/about">Acerca de Finast</Link></li>
               <li><a href="#help" onClick={(e) => e.preventDefault()}>Ayuda</a></li>
               <li><a href="#contact" onClick={(e) => e.preventDefault()}>Contacto</a></li>
             </ul>
