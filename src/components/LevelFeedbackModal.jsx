@@ -6,21 +6,21 @@ import { useState } from 'react';
  */
 export default function LevelFeedbackModal({ isOpen, onClose, levelId, levelTitle }) {
   const [rating, setRating] = useState(0);
-  const [confusingOption, setConfusingOption] = useState('');
+  const [improvementOption, setImprovementOption] = useState('');
   const [otherText, setOtherText] = useState('');
 
-  const confusingOptions = [
+  const improvementOptions = [
     {
-      id: 'too-difficult',
-      label: 'Fue muy difícil de entender'
+      id: 'confusing-examples',
+      label: 'Los ejemplos son confusos'
     },
     {
-      id: 'too-easy',
-      label: 'Fue muy fácil, me aburrió'
+      id: 'too-basic',
+      label: 'El contenido es muy básico / aburrido'
     },
     {
-      id: 'not-practical',
-      label: 'No fue práctico o útil'
+      id: 'complicated-terms',
+      label: 'Usa términos muy complicados'
     }
   ];
 
@@ -30,7 +30,7 @@ export default function LevelFeedbackModal({ isOpen, onClose, levelId, levelTitl
       levelId,
       levelTitle,
       rating,
-      confusing: confusingOption === 'other' ? otherText : confusingOption,
+      improvement: improvementOption === 'other' ? otherText : improvementOption,
       timestamp: new Date().toISOString()
     };
 
@@ -88,20 +88,20 @@ export default function LevelFeedbackModal({ isOpen, onClose, levelId, levelTitl
             )}
           </div>
 
-          {/* Pregunta 2: Qué fue confuso o aburrido */}
+          {/* Pregunta 2: Para mejorar, ¿en qué deberíamos enfocarnos? */}
           <div className="feedback-question">
             <label className="feedback-question-label">
-              ¿Qué fue lo más confuso o aburrido?
+              Para mejorar, ¿en qué deberíamos enfocarnos?
             </label>
             <div className="confusing-options">
-              {confusingOptions.map((option) => (
+              {improvementOptions.map((option) => (
                 <label key={option.id} className="confusing-option">
                   <input
                     type="radio"
-                    name="confusing"
+                    name="improvement"
                     value={option.id}
-                    checked={confusingOption === option.id}
-                    onChange={(e) => setConfusingOption(e.target.value)}
+                    checked={improvementOption === option.id}
+                    onChange={(e) => setImprovementOption(e.target.value)}
                   />
                   <span>{option.label}</span>
                 </label>
@@ -109,19 +109,19 @@ export default function LevelFeedbackModal({ isOpen, onClose, levelId, levelTitl
               <label className="confusing-option">
                 <input
                   type="radio"
-                  name="confusing"
+                  name="improvement"
                   value="other"
-                  checked={confusingOption === 'other'}
-                  onChange={(e) => setConfusingOption(e.target.value)}
+                  checked={improvementOption === 'other'}
+                  onChange={(e) => setImprovementOption(e.target.value)}
                 />
                 <span>Otros</span>
               </label>
             </div>
             
-            {confusingOption === 'other' && (
+            {improvementOption === 'other' && (
               <textarea
                 className="feedback-other-input"
-                placeholder="Escribe aquí qué fue confuso o aburrido..."
+                placeholder="Escribe aquí en qué deberíamos enfocarnos para mejorar..."
                 value={otherText}
                 onChange={(e) => setOtherText(e.target.value)}
                 rows={3}
@@ -133,7 +133,7 @@ export default function LevelFeedbackModal({ isOpen, onClose, levelId, levelTitl
             <button
               className="btn btn-primary"
               onClick={handleSubmit}
-              disabled={rating === 0 || (confusingOption === 'other' && !otherText.trim())}
+              disabled={rating === 0 || (improvementOption === 'other' && !otherText.trim())}
             >
               Enviar Feedback
             </button>
