@@ -276,3 +276,140 @@ export function getLevelFeedbacks() {
   }
 }
 
+/**
+ * Guarda el desafío semanal aceptado por el usuario
+ * @param {Object} challenge - Objeto del desafío aceptado
+ */
+export function saveAcceptedChallenge(challenge) {
+  try {
+    const challengeData = {
+      ...challenge,
+      acceptedDate: new Date().toISOString(),
+      weekNumber: getCurrentWeekNumber()
+    };
+    localStorage.setItem('finast-accepted-challenge', JSON.stringify(challengeData));
+    
+    // Disparar evento para actualizar la UI
+    window.dispatchEvent(new CustomEvent('finast:challengeAccepted', { 
+      detail: { challenge: challengeData } 
+    }));
+  } catch (error) {
+    console.error("Error al guardar el desafío aceptado:", error);
+  }
+}
+
+/**
+ * Obtiene el desafío semanal aceptado por el usuario
+ * @returns {Object|null} El desafío aceptado o null si no hay ninguno
+ */
+export function getAcceptedChallenge() {
+  try {
+    const stored = localStorage.getItem('finast-accepted-challenge');
+    if (stored) {
+      const challenge = JSON.parse(stored);
+      // Verificar si el desafío es de la semana actual
+      const currentWeek = getCurrentWeekNumber();
+      if (challenge.weekNumber === currentWeek) {
+        return challenge;
+      } else {
+        // Si es de otra semana, limpiar el desafío
+        clearAcceptedChallenge();
+        return null;
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Error al leer el desafío aceptado:", error);
+    return null;
+  }
+}
+
+/**
+ * Elimina el desafío aceptado
+ */
+export function clearAcceptedChallenge() {
+  try {
+    localStorage.removeItem('finast-accepted-challenge');
+    window.dispatchEvent(new CustomEvent('finast:challengeCleared'));
+  } catch (error) {
+    console.error("Error al eliminar el desafío aceptado:", error);
+  }
+}
+
+/**
+ * Obtiene el número de semana actual del año
+ * @returns {number} Número de semana (1-52)
+ */
+function getCurrentWeekNumber() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+  return Math.ceil((days + startOfYear.getDay() + 1) / 7);
+}
+
+/**
+ * Marca un desafío como completado y otorga puntos
+ * @param {string} challengeId - ID del desafío completado
+ * @param {number} rewardPoints - Puntos a otorgar
+ * @returns {boolean} true si se completó exitosamente, false si ya estaba completado
+ */
+export function completeChallenge(challengeId, rewardPoints) {
+  try {
+    const completedKey = 'finast-completed-challenges';
+    const completed = JSON.parse(localStorage.getItem(completedKey) || '[]');
+    
+    // Verificar si ya está completado
+    const currentWeek = getCurrentWeekNumber();
+    const alreadyCompleted = completed.some(
+      c => c.challengeId === challengeId && c.weekNumber === currentWeek
+    );
+    
+    if (alreadyCompleted) {
+      return false; // Ya estaba completado
+    }
+    
+    // Agregar a la lista de completados
+    completed.push({
+      challengeId,
+      weekNumber: currentWeek,
+      completedDate: new Date().toISOString(),
+      rewardPoints
+    });
+    
+    localStorage.setItem(completedKey, JSON.stringify(completed));
+    
+    // Otorgar puntos
+    addPoints(rewardPoints);
+    
+    // Disparar evento
+    window.dispatchEvent(new CustomEvent('finast:challengeCompleted', { 
+      detail: { challengeId, rewardPoints } 
+    }));
+    
+    return true;
+  } catch (error) {
+    console.error("Error al completar el desafío:", error);
+    return false;
+  }
+}
+
+/**
+ * Verifica si un desafío está completado
+ * @param {string} challengeId - ID del desafío
+ * @returns {boolean} true si está completado
+ */
+export function isChallengeCompleted(challengeId) {
+  try {
+    const completedKey = 'finast-completed-challenges';
+    const completed = JSON.parse(localStorage.getItem(completedKey) || '[]');
+    const currentWeek = getCurrentWeekNumber();
+    
+    return completed.some(
+      c => c.challengeId === challengeId && c.weekNumber === currentWeek
+    );
+  } catch (error) {
+    console.error("Error al verificar el desafío:", error);
+    return false;
+  }
+}
+

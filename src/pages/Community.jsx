@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getUser } from '../data/user.js';
+import { getWeeklyChallenge, getChallengesByLevel } from '../data/weeklyChallenges.js';
+import { saveAcceptedChallenge, getAcceptedChallenge } from '../utils/storage.js';
 
 /**
  * Página de comunidad mejorada
@@ -74,6 +76,10 @@ export default function Community() {
     option3: 25  // Ahorrar para meta grande
   });
   const [showPollResults, setShowPollResults] = useState(false);
+  
+  // Desafío semanal
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null); // null, 'easy', 'medium', 'hard'
+  const [weeklyChallenge, setWeeklyChallenge] = useState(null);
 
   const handleLike = (postId) => {
     setPosts(posts.map(post => {
@@ -153,6 +159,45 @@ export default function Community() {
     }
   }, []);
 
+  // Actualizar desafío cuando cambia la dificultad
+  useEffect(() => {
+    if (selectedDifficulty) {
+      try {
+        const challenge = getWeeklyChallenge(selectedDifficulty);
+        if (challenge) {
+          setWeeklyChallenge(challenge);
+        }
+      } catch (error) {
+        console.error('Error al cargar el desafío:', error);
+        setWeeklyChallenge(null);
+      }
+    }
+  }, [selectedDifficulty]);
+
+  const handleDifficultySelection = (difficulty) => {
+    try {
+      setSelectedDifficulty(difficulty);
+      // El useEffect se encargará de cargar el desafío
+    } catch (error) {
+      console.error('Error al seleccionar dificultad:', error);
+    }
+  };
+
+  const handleAcceptChallenge = () => {
+    if (weeklyChallenge) {
+      saveAcceptedChallenge(weeklyChallenge);
+      // Cerrar el desafío después de aceptarlo
+      setSelectedDifficulty(null);
+      setWeeklyChallenge(null);
+    }
+  };
+
+  const handleRejectChallenge = () => {
+    // Simplemente cerrar el desafío
+    setSelectedDifficulty(null);
+    setWeeklyChallenge(null);
+  };
+
   // Filtrar posts según la pestaña activa
   const filteredPosts = activeTab === 'all' 
     ? posts 
@@ -162,6 +207,157 @@ export default function Community() {
     <div className="page community-page">
       <h1>Comunidad Finast</h1>
       <p className="page-description">Comparte tu progreso y aprende con otros</p>
+
+      {/* Desafío Semanal */}
+      <div className="weekly-challenge-widget">
+        {!selectedDifficulty ? (
+          // Pantalla de selección inicial
+          <div className="challenge-selection-screen">
+            <div className="challenge-selection-header">
+              <span className="challenge-main-icon">🏆</span>
+              <h3>Desafío Semanal</h3>
+            </div>
+            <div className="challenge-selection-content">
+              <p className="challenge-selection-question">
+                ¿Estás listo para cumplir un desafío?
+              </p>
+              <p className="challenge-selection-subtitle">
+                ¿Qué nivel quieres que sea el desafío?
+              </p>
+              <div className="challenge-level-options">
+                <button
+                  className="challenge-level-option"
+                  onClick={() => handleDifficultySelection('easy')}
+                  style={{ 
+                    borderColor: '#22c55e',
+                    background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)'
+                  }}
+                >
+                  <div className="level-option-header">
+                    <span className="level-option-emoji">🟢</span>
+                    <span className="level-option-label">Fácil</span>
+                  </div>
+                  <p className="level-option-description">Nivel: Conciencia</p>
+                  <p className="level-option-subtitle">Estos retos son para pensar y observar, toman poco tiempo.</p>
+                </button>
+                <button
+                  className="challenge-level-option"
+                  onClick={() => handleDifficultySelection('medium')}
+                  style={{ 
+                    borderColor: '#f59e0b',
+                    background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%)'
+                  }}
+                >
+                  <div className="level-option-header">
+                    <span className="level-option-emoji">🟡</span>
+                    <span className="level-option-label">Medio</span>
+                  </div>
+                  <p className="level-option-description">Nivel: Acción</p>
+                  <p className="level-option-subtitle">Estos retos requieren una acción concreta durante la semana.</p>
+                </button>
+                <button
+                  className="challenge-level-option"
+                  onClick={() => handleDifficultySelection('hard')}
+                  style={{ 
+                    borderColor: '#ef4444',
+                    background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)'
+                  }}
+                >
+                  <div className="level-option-header">
+                    <span className="level-option-emoji">🔴</span>
+                    <span className="level-option-label">Difícil</span>
+                  </div>
+                  <p className="level-option-description">Nivel: Hábito</p>
+                  <p className="level-option-subtitle">Estos retos requieren consistencia y cambiar un hábito.</p>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : weeklyChallenge ? (
+          // Pantalla del desafío seleccionado
+          <div className="challenge-display-screen">
+            <div className="challenge-header-section">
+              <div className="challenge-header-title">
+                <span className="challenge-main-icon">🏆</span>
+                <h3>Desafío Semanal</h3>
+              </div>
+              <button
+                className="challenge-change-level-btn"
+                onClick={() => {
+                  setSelectedDifficulty(null);
+                  setWeeklyChallenge(null);
+                }}
+                title="Cambiar nivel"
+              >
+                🔄 Cambiar nivel
+              </button>
+            </div>
+
+            <div className="challenge-content">
+              <div className="challenge-avatar-section">
+                <div 
+                  className="challenge-avatar"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${weeklyChallenge.levelColor}20 0%, ${weeklyChallenge.levelColor}10 100%)`,
+                    borderColor: weeklyChallenge.levelColor
+                  }}
+                >
+                  <span className="challenge-avatar-emoji">{weeklyChallenge.avatar}</span>
+                </div>
+                <div className="challenge-label" style={{ color: weeklyChallenge.levelColor }}>
+                  {weeklyChallenge.label}
+                </div>
+              </div>
+
+              <div className="challenge-details">
+                <h4 className="challenge-title">{weeklyChallenge.title}</h4>
+                <p className="challenge-level-badge" style={{ 
+                  backgroundColor: `${weeklyChallenge.levelColor}20`,
+                  color: weeklyChallenge.levelColor,
+                  borderColor: weeklyChallenge.levelColor
+                }}>
+                  Nivel: {weeklyChallenge.level}
+                </p>
+                <p className="challenge-description">{weeklyChallenge.description}</p>
+                <div className="challenge-reward-info">
+                  <span className="challenge-reward-display" style={{ 
+                    backgroundColor: `${weeklyChallenge.levelColor}20`,
+                    color: weeklyChallenge.levelColor,
+                    borderColor: weeklyChallenge.levelColor
+                  }}>
+                    💰 Recompensa: +{weeklyChallenge.rewardPoints || 0} puntos
+                  </span>
+                </div>
+                <div className="challenge-share-prompt">
+                  <p className="share-prompt-text">{weeklyChallenge.sharePrompt}</p>
+                </div>
+                <div className="challenge-actions">
+                  <button
+                    className="challenge-accept-btn"
+                    onClick={handleAcceptChallenge}
+                    style={{ 
+                      background: `linear-gradient(135deg, ${weeklyChallenge.levelColor} 0%, ${weeklyChallenge.levelColor}dd 100%)`,
+                      borderColor: weeklyChallenge.levelColor
+                    }}
+                  >
+                    ✅ Aceptar Desafío
+                  </button>
+                  <button
+                    className="challenge-reject-btn"
+                    onClick={handleRejectChallenge}
+                  >
+                    ❌ Rechazar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="challenge-loading">
+            <p>Cargando desafío...</p>
+          </div>
+        )}
+      </div>
 
       {/* Widget de Encuesta Semanal */}
       <div className="poll-widget">
