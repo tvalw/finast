@@ -9,8 +9,9 @@ import Progress from './pages/Progress.jsx';
 import Profile from './pages/Profile.jsx';
 import Community from './pages/Community.jsx';
 import Resources from './pages/Resources.jsx';
-import About from './pages/About.jsx';
+import Shop from './pages/Shop.jsx';
 import { updateStreak } from './utils/storage.js';
+import { getActiveTheme, getActiveEffects, applyTheme, applyEffects } from './utils/shop.js';
 import './App.css';
 
 /**
@@ -30,6 +31,16 @@ function App() {
       } else {
         document.documentElement.classList.remove('dark');
       }
+      
+      // Aplicar tema de la tienda
+      const activeTheme = getActiveTheme();
+      if (activeTheme) {
+        applyTheme(activeTheme);
+      }
+      
+      // Aplicar efectos
+      const activeEffects = getActiveEffects();
+      applyEffects(activeEffects);
     } catch (error) {
       // Ignorar errores
     }
@@ -48,7 +59,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/community" element={<Community />} />
             <Route path="/resources" element={<Resources />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/shop" element={<Shop />} />
           </Routes>
         </main>
         <Footer />

@@ -13,14 +13,14 @@ export default function ResourceCard({ resource }) {
    */
   const getCategoryColor = (category) => {
     const colors = {
-      documentation: "#667eea",
-      videos: "#e74c3c",
-      podcasts: "#9b59b6",
-      tools: "#00b894",
-      books: "#f39c12",
-      courses: "#0984e3"
+      documentation: "#6366f1",
+      videos: "#ef4444",
+      podcasts: "#8b5cf6",
+      tools: "#10b981",
+      books: "#f59e0b",
+      courses: "#6366f1"
     };
-    return colors[category] || "#667eea";
+    return colors[category] || "#6366f1";
   };
 
   /**
@@ -43,11 +43,11 @@ export default function ResourceCard({ resource }) {
    */
   const getLevelColor = (level) => {
     const colors = {
-      "Principiante": "#00b894",
-      "Intermedio": "#0984e3",
-      "Avanzado": "#e74c3c"
+      "Principiante": "#10b981",
+      "Intermedio": "#6366f1",
+      "Avanzado": "#ef4444"
     };
-    return colors[level] || "#667eea";
+    return colors[level] || "#6366f1";
   };
 
   /**

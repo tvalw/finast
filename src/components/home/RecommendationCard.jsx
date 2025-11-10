@@ -18,11 +18,11 @@ export default function RecommendationCard({ recommendation }) {
 
   const getBadgeColor = (type) => {
     const colors = {
-      beginner: '#22c55e',
-      progress: '#3b82f6',
-      motivation: '#eab308'
+      beginner: '#10b981',
+      progress: '#6366f1',
+      motivation: '#f59e0b'
     };
-    return colors[type] || '#667eea';
+    return colors[type] || '#6366f1';
   };
 
   const getBadgeText = (type) => {

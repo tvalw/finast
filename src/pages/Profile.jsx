@@ -3,6 +3,8 @@ import { getUser, updateUserName, updateUserAvatar, updateUserGoal } from '../da
 import { useProgress } from '../hooks/useProgress.js';
 import BadgeList from '../components/BadgeList.jsx';
 import { resetProgress } from '../utils/debug.js';
+import { getActiveAvatar } from '../utils/shop.js';
+import { getItemById } from '../data/shopItems.js';
 
 /**
  * Página de perfil del usuario
@@ -24,12 +26,40 @@ export default function Profile() {
   
   const progress = useProgress();
 
+  const [shopAvatar, setShopAvatar] = useState(null);
+
+  useEffect(() => {
+    const activeAvatarId = getActiveAvatar();
+    if (activeAvatarId) {
+      const avatarItem = getItemById(activeAvatarId);
+      if (avatarItem) {
+        setShopAvatar(avatarItem.value);
+      }
+    }
+    
+    const handleAvatarChange = () => {
+      const activeAvatarId = getActiveAvatar();
+      if (activeAvatarId) {
+        const avatarItem = getItemById(activeAvatarId);
+        setShopAvatar(avatarItem ? avatarItem.value : null);
+      } else {
+        setShopAvatar(null);
+      }
+    };
+    
+    window.addEventListener('finast:avatarChanged', handleAvatarChange);
+    return () => window.removeEventListener('finast:avatarChanged', handleAvatarChange);
+  }, []);
+
   // Opciones de avatares disponibles
   const avatars = [
     { id: 1, emoji: '👤', path: '/assets/avatar1.png' },
     { id: 2, emoji: '👨', path: '/assets/avatar2.png' },
     { id: 3, emoji: '👩', path: '/assets/avatar3.png' },
   ];
+  
+  // Usar avatar de la tienda si está activo
+  const displayAvatar = shopAvatar || user.avatar;
 
   const handleSaveName = () => {
     if (nameInput.trim()) {
@@ -76,7 +106,7 @@ export default function Profile() {
               title="Cambiar avatar"
             >
               <div className="avatar-emoji">
-                {avatars.find(a => a.path === user.avatar)?.emoji || '👤'}
+                {shopAvatar || avatars.find(a => a.path === user.avatar)?.emoji || '👤'}
               </div>
             </div>
             {showAvatarSelector && (

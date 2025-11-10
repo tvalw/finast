@@ -43,6 +43,7 @@ export default function Navbar() {
                 <Link to="/levels" className="navbar-link">Niveles</Link>
                 <Link to="/progress" className="navbar-link">Progreso</Link>
                 <Link to="/resources" className="navbar-link">Recursos</Link>
+                <Link to="/shop" className="navbar-link">🛍️ Tienda</Link>
                 <Link to="/profile" className="navbar-link">Perfil</Link>
                 <Link to="/community" className="navbar-link">Comunidad</Link>
               </div>

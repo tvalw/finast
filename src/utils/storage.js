@@ -45,10 +45,12 @@ export function saveProgress(progress) {
 
 /**
  * Suma puntos al usuario y guarda el progreso
+ * Puede recibir valores negativos para restar puntos
  */
 export function addPoints(points) {
   const progress = getProgress();
-  progress.points = (progress.points || 0) + points;
+  const currentPoints = progress.points || 0;
+  progress.points = Math.max(0, currentPoints + points); // No permitir puntos negativos
   saveProgress(progress);
   
   // Disparar evento para actualizar la UI
