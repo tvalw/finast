@@ -9,8 +9,9 @@ import ResourceCard from '../components/ResourceCard.jsx';
 import { getUser } from '../data/user.js';
 import { getDailyStats, getCurrentLesson, getCurrentLessonProgress, getRecommendations } from '../utils/homeCalculations.js';
 import { financialResources, getResourcesByCategory, getCategories, getCategoryName } from '../data/resources.js';
-import { getHomeResourcesCategory, saveHomeResourcesCategory, getAcceptedChallenge, clearAcceptedChallenge, completeChallenge, isChallengeCompleted } from '../utils/storage.js';
+import { getHomeResourcesCategory, saveHomeResourcesCategory, getAcceptedChallenge, clearAcceptedChallenge, completeChallenge, isChallengeCompleted, getMode } from '../utils/storage.js';
 import { getRandomTip } from '../data/financialTips.js';
+import { Link } from 'react-router-dom';
 
 /**
  * Página de inicio rediseñada con diseño moderno estilo Duolingo
@@ -28,6 +29,7 @@ export default function Home() {
   const [challengeCompleted, setChallengeCompleted] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [rewardPoints, setRewardPoints] = useState(0);
+  const [currentMode, setCurrentMode] = useState(() => getMode());
 
   // Guardar categoría seleccionada en localStorage
   useEffect(() => {
@@ -69,8 +71,19 @@ export default function Home() {
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('finast:challengeAccepted', handleChallengeAccepted);
       window.removeEventListener('finast:challengeCleared', handleChallengeCleared);
+      window.removeEventListener('finast:modeChanged', handleModeChanged);
     };
   }, []);
+
+  // Función para obtener el nombre del modo
+  const getModeName = (mode) => {
+    const modeNames = {
+      relaxed: '🌿 Modo Relajado',
+      competitive: '⚡ Modo Competitivo',
+      learning: '📘 Modo Aprendizaje'
+    };
+    return modeNames[mode] || 'Sin modo seleccionado';
+  };
 
   const handleDismissChallenge = () => {
     clearAcceptedChallenge();
@@ -111,6 +124,14 @@ export default function Home() {
         <div className="welcome-message">
           <h1>¡Bienvenido de vuelta, {user.name}! 👋</h1>
           <p className="hero-subtitle">Tu progreso financiero hoy:</p>
+          {currentMode && (
+            <div className="current-mode-indicator">
+              <span className="mode-label">{getModeName(currentMode)}</span>
+              <Link to="/mode" className="change-mode-link">
+                Cambiar modo
+              </Link>
+            </div>
+          )}
         </div>
         
         <DailyStats stats={stats} />

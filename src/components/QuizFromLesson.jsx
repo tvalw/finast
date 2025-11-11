@@ -13,8 +13,11 @@ import { checkAndUnlockNextLevel, isLevelCompleted } from '../utils/progress.js'
 /**
  * Componente que maneja el quiz de una lección
  * Muestra las preguntas una por una y maneja el progreso
+ * @param {Object} lesson - La lección actual
+ * @param {Object} level - El nivel actual
+ * @param {string} mode - Modo de aprendizaje: 'relaxed', 'competitive', o 'learning'
  */
-export default function QuizFromLesson({ lesson, level }) {
+export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) {
   const { levelId, lessonId } = useParams();
   const navigate = useNavigate();
   
@@ -68,9 +71,21 @@ export default function QuizFromLesson({ lesson, level }) {
     const originalIndex = lesson.questions.findIndex(q => q.id === currentQuestion.id);
     
     if (isCorrect) {
-      const points = 10; // 10 puntos por pregunta correcta
-      addPoints(points);
-      setPointsEarned(prev => prev + points);
+      // Otorgar puntos según el modo
+      let points = 0;
+      if (mode === 'competitive') {
+        points = 10; // Más puntos en modo competitivo
+      } else if (mode === 'relaxed') {
+        points = 5; // Menos puntos en modo relajado
+      } else if (mode === 'learning') {
+        points = 5; // Menos puntos en modo aprendizaje
+      }
+      
+      // Guardar puntos en todos los modos
+      if (points > 0) {
+        addPoints(points);
+        setPointsEarned(prev => prev + points);
+      }
       
       // Si está en modo repaso, remover la pregunta de las incorrectas
       if (isReviewMode) {
@@ -270,6 +285,7 @@ export default function QuizFromLesson({ lesson, level }) {
           pointsEarned={pointsEarned}
           levelId={parseInt(levelId)}
           lessonId={lessonId}
+          mode={mode}
         />
         
         {/* Modal de feedback cuando se completa un nivel */}
@@ -307,7 +323,24 @@ export default function QuizFromLesson({ lesson, level }) {
         <div className="lesson-completed">
           <div className="completion-card">
             <h2>✅ ¡Lección Completada!</h2>
-            <p>Has ganado {pointsEarned} puntos</p>
+            {pointsEarned > 0 && (
+              <p>
+                Has ganado {pointsEarned} puntos
+                {mode === 'competitive' && ' ⚡ (Modo competitivo: puntos extra)'}
+                {mode === 'relaxed' && ' 🌿 (Modo relajado)'}
+                {mode === 'learning' && ' 📘 (Modo aprendizaje)'}
+              </p>
+            )}
+            {pointsEarned === 0 && (
+              <>
+                {mode === 'relaxed' && (
+                  <p>¡Lección completada! Aprendiste sin presión 🎉</p>
+                )}
+                {mode === 'learning' && (
+                  <p>¡Lección completada! Esperamos que hayas aprendido mucho 📘</p>
+                )}
+              </>
+            )}
             <div className="completion-actions">
               <button className="btn btn-primary" onClick={handleNextLesson}>
                 Siguiente lección
@@ -342,6 +375,16 @@ export default function QuizFromLesson({ lesson, level }) {
 
   return (
     <div className="lesson-view">
+      {/* Barra de modo aprendizaje */}
+      {mode === 'learning' && (
+        <div className="learning-mode-banner">
+          <span className="learning-mode-icon">📘</span>
+          <span className="learning-mode-text">
+            Modo aprendizaje: puedes ver las respuestas correctas antes de responder.
+          </span>
+        </div>
+      )}
+      
       <div className="lesson-header">
         <h2>{lesson.title}</h2>
         {isReviewMode && (
@@ -370,6 +413,7 @@ export default function QuizFromLesson({ lesson, level }) {
         key={`${currentQuestion.id}-${questionKey}-${isReviewMode ? 'review' : 'normal'}`}
         question={currentQuestion} 
         onAnswer={handleAnswer}
+        mode={mode}
       />
     </div>
   );

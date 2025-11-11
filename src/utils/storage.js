@@ -465,3 +465,51 @@ export function getMostViewedTerms(limit = 10) {
   }
 }
 
+// ============================================
+// FUNCIONES PARA EL MODO DE APRENDIZAJE
+// ============================================
+
+const MODE_KEY = "finast-mode";
+
+/**
+ * Guarda el modo de aprendizaje seleccionado
+ * @param {string} mode - Modo seleccionado: 'relaxed', 'competitive', o 'learning'
+ */
+export function setMode(mode) {
+  try {
+    if (mode && ['relaxed', 'competitive', 'learning'].includes(mode)) {
+      localStorage.setItem(MODE_KEY, mode);
+      // Disparar evento para actualizar UI
+      window.dispatchEvent(new CustomEvent('finast:modeChanged', { detail: { mode } }));
+    }
+  } catch (error) {
+    console.error("Error al guardar el modo:", error);
+  }
+}
+
+/**
+ * Obtiene el modo de aprendizaje actual
+ * @returns {string|null} El modo actual o null si no hay modo seleccionado
+ */
+export function getMode() {
+  try {
+    const mode = localStorage.getItem(MODE_KEY);
+    return mode && ['relaxed', 'competitive', 'learning'].includes(mode) ? mode : null;
+  } catch (error) {
+    console.error("Error al leer el modo:", error);
+    return null;
+  }
+}
+
+/**
+ * Elimina el modo guardado
+ */
+export function clearMode() {
+  try {
+    localStorage.removeItem(MODE_KEY);
+    window.dispatchEvent(new CustomEvent('finast:modeChanged', { detail: { mode: null } }));
+  } catch (error) {
+    console.error("Error al eliminar el modo:", error);
+  }
+}
+

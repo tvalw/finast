@@ -67,6 +67,17 @@ export default function Community() {
 
   const [newPostText, setNewPostText] = useState('');
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'achievement', 'question'
+  const [comments, setComments] = useState(() => {
+    // Cargar comentarios guardados desde localStorage
+    try {
+      const saved = localStorage.getItem('finast-community-comments');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [commentTexts, setCommentTexts] = useState({}); // Texto de comentario por post
+  const [expandedComments, setExpandedComments] = useState({}); // Posts con comentarios expandidos
   
   // Encuesta semanal
   const [pollVote, setPollVote] = useState(null); // null, 'option1', 'option2', 'option3'
@@ -118,6 +129,69 @@ export default function Community() {
       setPosts([newPost, ...posts]);
       setNewPostText('');
     }
+  };
+
+  const handleAddComment = (postId) => {
+    const commentText = commentTexts[postId]?.trim();
+    if (!commentText) return;
+
+    const user = getUser();
+    const newComment = {
+      id: Date.now(),
+      postId: postId,
+      user: user.name || "Usuario",
+      text: commentText,
+      timestamp: new Date().toISOString()
+    };
+
+    const updatedComments = {
+      ...comments,
+      [postId]: [...(comments[postId] || []), newComment]
+    };
+
+    setComments(updatedComments);
+    // Guardar en localStorage
+    try {
+      localStorage.setItem('finast-community-comments', JSON.stringify(updatedComments));
+    } catch (error) {
+      console.error('Error al guardar comentarios:', error);
+    }
+
+    // Limpiar el campo de comentario
+    setCommentTexts({
+      ...commentTexts,
+      [postId]: ''
+    });
+
+    // Expandir comentarios si no están expandidos
+    if (!expandedComments[postId]) {
+      setExpandedComments({
+        ...expandedComments,
+        [postId]: true
+      });
+    }
+  };
+
+  const toggleComments = (postId) => {
+    setExpandedComments({
+      ...expandedComments,
+      [postId]: !expandedComments[postId]
+    });
+  };
+
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins < 60) return `Hace ${diffMins}m`;
+    if (diffHours < 24) return `Hace ${diffHours}h`;
+    if (diffDays < 7) return `Hace ${diffDays}d`;
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   };
 
   const handlePollVote = (option) => {
@@ -506,9 +580,73 @@ export default function Community() {
                   onClick={() => handleLike(post.id)}
                   aria-label="Me gusta"
                 >
-                  {post.liked ? '❤️' : '🤍'} {post.likes} me gusta
+                  {post.liked ? '❤️' : '🤍'} {post.likes}
+                </button>
+                <button
+                  className="comment-button"
+                  onClick={() => toggleComments(post.id)}
+                  aria-label="Comentar"
+                >
+                  💬 {comments[post.id]?.length || 0}
                 </button>
               </div>
+
+              {/* Sección de comentarios */}
+              {expandedComments[post.id] && (
+                <div className="post-comments-section">
+                  {/* Lista de comentarios */}
+                  {comments[post.id] && comments[post.id].length > 0 && (
+                    <div className="comments-list">
+                      {comments[post.id].map(comment => (
+                        <div key={comment.id} className="comment-item">
+                          <div className="comment-avatar">
+                            {comment.user.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="comment-content">
+                            <div className="comment-header">
+                              <span className="comment-user">{comment.user}</span>
+                              <span className="comment-time">{formatTimestamp(comment.timestamp)}</span>
+                            </div>
+                            <div className="comment-text">{comment.text}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Formulario para nuevo comentario */}
+                  <div className="comment-form">
+                    <div className="comment-input-wrapper">
+                      <div className="comment-avatar-small">
+                        {getUser().name?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <input
+                        type="text"
+                        className="comment-input"
+                        placeholder="Escribe un comentario..."
+                        value={commentTexts[post.id] || ''}
+                        onChange={(e) => setCommentTexts({
+                          ...commentTexts,
+                          [post.id]: e.target.value
+                        })}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleAddComment(post.id);
+                          }
+                        }}
+                      />
+                    </div>
+                    <button
+                      className="comment-submit-btn"
+                      onClick={() => handleAddComment(post.id)}
+                      disabled={!commentTexts[post.id]?.trim()}
+                    >
+                      Responder
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         )}

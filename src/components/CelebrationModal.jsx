@@ -6,7 +6,7 @@ import { getUnlockedBadges } from '../utils/progress.js';
  * 
  * Muestra:
  * - Animación de celebración (confeti/emoji)
- * - Puntos ganados
+ * - Puntos ganados (solo en modo competitivo)
  * - Insignia desbloqueada (si hay una nueva)
  * - Botón para continuar
  * 
@@ -15,8 +15,9 @@ import { getUnlockedBadges } from '../utils/progress.js';
  * @param {number} pointsEarned - Puntos ganados en la lección
  * @param {number} levelId - ID del nivel completado
  * @param {string} lessonId - ID de la lección completada
+ * @param {string} mode - Modo de aprendizaje ('relaxed', 'competitive', 'learning')
  */
-export default function CelebrationModal({ isOpen, onClose, pointsEarned, levelId, lessonId }) {
+export default function CelebrationModal({ isOpen, onClose, pointsEarned, levelId, lessonId, mode = 'competitive' }) {
   const [badges, setBadges] = useState([]);
   const [newBadge, setNewBadge] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -77,10 +78,22 @@ export default function CelebrationModal({ isOpen, onClose, pointsEarned, levelI
           <h2 className="celebration-title">¡Felicidades! 🎉</h2>
           <p className="celebration-subtitle">Lección completada</p>
           
-          <div className="celebration-points">
-            <div className="points-icon">⭐</div>
-            <div className="points-value">+{pointsEarned} puntos</div>
-          </div>
+          {/* Mostrar puntos en todos los modos */}
+          {pointsEarned > 0 && (
+            <div className="celebration-points">
+              <div className="points-icon">⭐</div>
+              <div className="points-value">+{pointsEarned} puntos</div>
+              {mode === 'competitive' && (
+                <div className="points-bonus">⚡ Modo competitivo: puntos extra</div>
+              )}
+              {mode === 'relaxed' && (
+                <div className="points-bonus">🌿 Modo relajado</div>
+              )}
+              {mode === 'learning' && (
+                <div className="points-bonus">📘 Modo aprendizaje</div>
+              )}
+            </div>
+          )}
           
           {newBadge && (
             <div className="celebration-badge">

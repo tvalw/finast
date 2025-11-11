@@ -12,6 +12,7 @@ import Resources from './pages/Resources.jsx';
 import Shop from './pages/Shop.jsx';
 import Simulator from './pages/Simulator.jsx';
 import Glossary from './pages/Glossary.jsx';
+import ModeSelect from './pages/ModeSelect.jsx';
 import { updateStreak } from './utils/storage.js';
 import { getActiveTheme, getActiveEffects, applyTheme, applyEffects, getActiveNavbarEffects, applyNavbarEffects, getActiveBackgroundEffects, applyBackgroundEffects } from './utils/shop.js';
 import './App.css';
@@ -72,6 +73,7 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/simulator" element={<Simulator />} />
             <Route path="/glossary" element={<Glossary />} />
+            <Route path="/mode" element={<ModeSelect />} />
           </Routes>
         </main>
         <Footer />

@@ -7,8 +7,9 @@ import { saveLastLesson } from '../utils/storage.js';
 /**
  * Componente que muestra una lección completa
  * Tiene dos etapas: "reading" (contenido educativo) y "quiz" (preguntas)
+ * @param {string} mode - Modo de aprendizaje: 'relaxed', 'competitive', o 'learning'
  */
-export default function LessonView() {
+export default function LessonView({ mode }) {
   const { levelId, lessonId } = useParams();
   const navigate = useNavigate();
   
@@ -48,6 +49,15 @@ export default function LessonView() {
   if (step === "reading") {
     return (
       <div className="lesson-reading">
+        {/* Barra de modo aprendizaje */}
+        {mode === 'learning' && (
+          <div className="learning-mode-banner">
+            <span className="learning-mode-icon">📘</span>
+            <span className="learning-mode-text">
+              Modo aprendizaje: puedes ver las respuestas correctas antes de responder.
+            </span>
+          </div>
+        )}
         <div className="lesson-reading-card">
           <h2>{lesson.title}</h2>
           {lesson.content && (
@@ -83,6 +93,6 @@ export default function LessonView() {
   }
 
   // Etapa de quiz
-  return <QuizFromLesson lesson={lesson} level={level} />;
+  return <QuizFromLesson lesson={lesson} level={level} mode={mode} />;
 }
 
