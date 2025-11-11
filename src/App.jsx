@@ -10,8 +10,10 @@ import Profile from './pages/Profile.jsx';
 import Community from './pages/Community.jsx';
 import Resources from './pages/Resources.jsx';
 import Shop from './pages/Shop.jsx';
+import Simulator from './pages/Simulator.jsx';
+import Glossary from './pages/Glossary.jsx';
 import { updateStreak } from './utils/storage.js';
-import { getActiveTheme, getActiveEffects, applyTheme, applyEffects } from './utils/shop.js';
+import { getActiveTheme, getActiveEffects, applyTheme, applyEffects, getActiveNavbarEffects, applyNavbarEffects, getActiveBackgroundEffects, applyBackgroundEffects } from './utils/shop.js';
 import './App.css';
 
 /**
@@ -41,6 +43,14 @@ function App() {
       // Aplicar efectos
       const activeEffects = getActiveEffects();
       applyEffects(activeEffects);
+      
+      // Aplicar efectos de navbar
+      const activeNavbarEffects = getActiveNavbarEffects();
+      applyNavbarEffects(activeNavbarEffects);
+      
+      // Aplicar efectos de fondo
+      const activeBackgroundEffects = getActiveBackgroundEffects();
+      applyBackgroundEffects(activeBackgroundEffects);
     } catch (error) {
       // Ignorar errores
     }
@@ -60,6 +70,8 @@ function App() {
             <Route path="/community" element={<Community />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/simulator" element={<Simulator />} />
+            <Route path="/glossary" element={<Glossary />} />
           </Routes>
         </main>
         <Footer />

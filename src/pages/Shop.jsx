@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useProgress } from '../hooks/useProgress.js';
 import { shopItems, getItemsByCategory, getCategories, getCategoryName } from '../data/shopItems.js';
-import { getPurchasedItems, isItemPurchased, purchaseItem, setActiveTheme, getActiveTheme, setActiveAvatar, getActiveAvatar, toggleEffect, getActiveEffects, applyTheme, removeTheme } from '../utils/shop.js';
+import { getPurchasedItems, isItemPurchased, purchaseItem, setActiveTheme, getActiveTheme, setActiveAvatar, getActiveAvatar, toggleEffect, getActiveEffects, applyTheme, removeTheme, toggleNavbarEffect, getActiveNavbarEffects, toggleBackgroundEffect, getActiveBackgroundEffects } from '../utils/shop.js';
 import { addPoints } from '../utils/storage.js';
 
 /**
@@ -14,6 +14,8 @@ export default function Shop() {
   const [activeTheme, setActiveThemeState] = useState(() => getActiveTheme());
   const [activeAvatar, setActiveAvatarState] = useState(() => getActiveAvatar());
   const [activeEffects, setActiveEffects] = useState(() => getActiveEffects());
+  const [activeNavbarEffects, setActiveNavbarEffects] = useState(() => getActiveNavbarEffects());
+  const [activeBackgroundEffects, setActiveBackgroundEffects] = useState(() => getActiveBackgroundEffects());
   const [purchaseMessage, setPurchaseMessage] = useState(null);
 
   const categories = getCategories();
@@ -28,6 +30,8 @@ export default function Shop() {
       setActiveThemeState(getActiveTheme());
       setActiveAvatarState(getActiveAvatar());
       setActiveEffects(getActiveEffects());
+      setActiveNavbarEffects(getActiveNavbarEffects());
+      setActiveBackgroundEffects(getActiveBackgroundEffects());
     };
 
     const handleStorageChange = () => updateShop();
@@ -73,6 +77,12 @@ export default function Shop() {
       } else if (item.type === 'effect') {
         toggleEffect(item.value);
         setActiveEffects(getActiveEffects());
+      } else if (item.type === 'navbar') {
+        toggleNavbarEffect(item.value);
+        setActiveNavbarEffects(getActiveNavbarEffects());
+      } else if (item.type === 'background') {
+        toggleBackgroundEffect(item.value);
+        setActiveBackgroundEffects(getActiveBackgroundEffects());
       }
     }
   };
@@ -96,6 +106,12 @@ export default function Shop() {
     } else if (item.type === 'effect') {
       toggleEffect(item.value);
       setActiveEffects(getActiveEffects());
+    } else if (item.type === 'navbar') {
+      toggleNavbarEffect(item.value);
+      setActiveNavbarEffects(getActiveNavbarEffects());
+    } else if (item.type === 'background') {
+      toggleBackgroundEffect(item.value);
+      setActiveBackgroundEffects(getActiveBackgroundEffects());
     }
   };
 
@@ -141,7 +157,9 @@ export default function Shop() {
           const isActive = 
             (item.type === 'theme' && activeTheme === item.id) ||
             (item.type === 'avatar' && activeAvatar === item.id) ||
-            (item.type === 'effect' && activeEffects.includes(item.value));
+            (item.type === 'effect' && activeEffects.includes(item.value)) ||
+            (item.type === 'navbar' && activeNavbarEffects.includes(item.value)) ||
+            (item.type === 'background' && activeBackgroundEffects.includes(item.value));
           const canAfford = progress.points >= item.price;
 
           return (

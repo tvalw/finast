@@ -413,3 +413,55 @@ export function isChallengeCompleted(challengeId) {
   }
 }
 
+// ============================================
+// FUNCIONES PARA EL GLOSARIO FINANCIERO
+// ============================================
+
+const GLOSSARY_VIEWS_KEY = 'finast-glossary-views';
+
+/**
+ * Registra una visualización de un término del glosario
+ * @param {string} term - Nombre del término
+ */
+export function addViewedTerm(term) {
+  try {
+    const views = JSON.parse(localStorage.getItem(GLOSSARY_VIEWS_KEY) || '{}');
+    if (views[term]) {
+      views[term] = {
+        term,
+        views: views[term].views + 1,
+        lastViewed: new Date().toISOString()
+      };
+    } else {
+      views[term] = {
+        term,
+        views: 1,
+        lastViewed: new Date().toISOString()
+      };
+    }
+    localStorage.setItem(GLOSSARY_VIEWS_KEY, JSON.stringify(views));
+  } catch (error) {
+    console.error("Error al registrar visualización del término:", error);
+  }
+}
+
+/**
+ * Obtiene los términos más vistos, ordenados por número de visualizaciones
+ * @param {number} limit - Número máximo de términos a retornar (default: 10)
+ * @returns {Array} Array de objetos con term y views
+ */
+export function getMostViewedTerms(limit = 10) {
+  try {
+    const views = JSON.parse(localStorage.getItem(GLOSSARY_VIEWS_KEY) || '{}');
+    const termsArray = Object.values(views);
+    
+    // Ordenar por número de visualizaciones (descendente)
+    termsArray.sort((a, b) => b.views - a.views);
+    
+    return termsArray.slice(0, limit);
+  } catch (error) {
+    console.error("Error al obtener términos más vistos:", error);
+    return [];
+  }
+}
+

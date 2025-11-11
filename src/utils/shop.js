@@ -3,10 +3,14 @@
  * Maneja compras, inventario y aplicación de personalizaciones
  */
 
+import { getItemById } from '../data/shopItems.js';
+
 const PURCHASED_ITEMS_KEY = 'finast-purchased-items';
 const ACTIVE_THEME_KEY = 'finast-active-theme';
 const ACTIVE_AVATAR_KEY = 'finast-active-avatar';
 const ACTIVE_EFFECTS_KEY = 'finast-active-effects';
+const ACTIVE_NAVBAR_EFFECTS_KEY = 'finast-active-navbar-effects';
+const ACTIVE_BACKGROUND_EFFECTS_KEY = 'finast-active-background-effects';
 
 /**
  * Obtiene todos los items comprados
@@ -80,11 +84,15 @@ export function setActiveTheme(themeId) {
  * Aplica un tema a la página
  */
 export function applyTheme(themeId) {
-  const { getItemById } = require('../data/shopItems.js');
+  if (!themeId || typeof window === 'undefined') return;
+  
   const theme = getItemById(themeId);
   
-  if (!theme || theme.type !== 'theme') return;
-  
+  if (!theme || theme.type !== 'theme') {
+    console.warn('Tema no encontrado:', themeId);
+    return;
+  }
+
   const root = document.documentElement;
   
   // Aplicar colores principales
@@ -236,6 +244,108 @@ export function applyEffects(effectIds) {
   });
 }
 
+/**
+ * Obtiene los efectos de navbar activos
+ */
+export function getActiveNavbarEffects() {
+  try {
+    const stored = localStorage.getItem(ACTIVE_NAVBAR_EFFECTS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error al leer efectos de navbar activos:', error);
+    return [];
+  }
+}
+
+/**
+ * Activa o desactiva un efecto de navbar
+ */
+export function toggleNavbarEffect(effectId) {
+  const active = getActiveNavbarEffects();
+  const index = active.indexOf(effectId);
+  
+  if (index > -1) {
+    active.splice(index, 1);
+  } else {
+    active.push(effectId);
+  }
+  
+  try {
+    localStorage.setItem(ACTIVE_NAVBAR_EFFECTS_KEY, JSON.stringify(active));
+    applyNavbarEffects(active);
+    return true;
+  } catch (error) {
+    console.error('Error al guardar efectos de navbar:', error);
+    return false;
+  }
+}
+
+/**
+ * Aplica efectos visuales a la navbar
+ */
+export function applyNavbarEffects(effectIds) {
+  const root = document.documentElement;
+  
+  // Remover todos los efectos de navbar
+  root.className = root.className.replace(/navbar-effect-\w+/g, '').trim();
+  
+  // Aplicar efectos activos
+  effectIds.forEach(effectId => {
+    root.classList.add(`navbar-effect-${effectId}`);
+  });
+}
+
+/**
+ * Obtiene los efectos de fondo activos
+ */
+export function getActiveBackgroundEffects() {
+  try {
+    const stored = localStorage.getItem(ACTIVE_BACKGROUND_EFFECTS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error al leer efectos de fondo activos:', error);
+    return [];
+  }
+}
+
+/**
+ * Activa o desactiva un efecto de fondo
+ */
+export function toggleBackgroundEffect(effectId) {
+  const active = getActiveBackgroundEffects();
+  const index = active.indexOf(effectId);
+  
+  if (index > -1) {
+    active.splice(index, 1);
+  } else {
+    active.push(effectId);
+  }
+  
+  try {
+    localStorage.setItem(ACTIVE_BACKGROUND_EFFECTS_KEY, JSON.stringify(active));
+    applyBackgroundEffects(active);
+    return true;
+  } catch (error) {
+    console.error('Error al guardar efectos de fondo:', error);
+    return false;
+  }
+}
+
+/**
+ * Aplica efectos visuales al fondo
+ */
+export function applyBackgroundEffects(effectIds) {
+  const root = document.documentElement;
+  
+  // Remover todos los efectos de fondo
+  root.className = root.className.replace(/bg-effect-\w+/g, '').trim();
+  
+  // Aplicar efectos activos
+  effectIds.forEach(effectId => {
+    root.classList.add(`bg-effect-${effectId}`);
+  });
+}
+
 // Aplicar tema y efectos al cargar
 if (typeof window !== 'undefined') {
   const initializeShop = () => {
@@ -246,6 +356,12 @@ if (typeof window !== 'undefined') {
     
     const activeEffects = getActiveEffects();
     applyEffects(activeEffects);
+    
+    const activeNavbarEffects = getActiveNavbarEffects();
+    applyNavbarEffects(activeNavbarEffects);
+    
+    const activeBackgroundEffects = getActiveBackgroundEffects();
+    applyBackgroundEffects(activeBackgroundEffects);
   };
   
   if (document.readyState === 'loading') {
