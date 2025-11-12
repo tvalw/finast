@@ -11,7 +11,6 @@ import { getDailyStats, getCurrentLesson, getCurrentLessonProgress, getRecommend
 import { financialResources, getResourcesByCategory, getCategories, getCategoryName } from '../data/resources.js';
 import { getHomeResourcesCategory, saveHomeResourcesCategory, getAcceptedChallenge, clearAcceptedChallenge, completeChallenge, isChallengeCompleted, getMode } from '../utils/storage.js';
 import { getRandomTip } from '../data/financialTips.js';
-import { Link } from 'react-router-dom';
 
 /**
  * Página de inicio rediseñada con diseño moderno estilo Duolingo
@@ -59,11 +58,16 @@ export default function Home() {
       setAcceptedChallenge(null);
     };
 
+    const handleModeChanged = () => {
+      setCurrentMode(getMode());
+    };
+
     window.addEventListener('finast:pointsUpdated', handlePointsUpdate);
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('focus', handleFocus);
     window.addEventListener('finast:challengeAccepted', handleChallengeAccepted);
     window.addEventListener('finast:challengeCleared', handleChallengeCleared);
+    window.addEventListener('finast:modeChanged', handleModeChanged);
 
     return () => {
       window.removeEventListener('finast:pointsUpdated', handlePointsUpdate);
