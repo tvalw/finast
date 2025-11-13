@@ -28,9 +28,13 @@ export default function LessonView({ mode }) {
         // Guardar como última lección vista
         saveLastLesson(parseInt(levelId), lessonId);
         
-        // Si la lección no tiene content, saltar directo al quiz
+        // Siempre empezar en la etapa de lectura si tiene contenido
+        // Si no tiene content, saltar directo al quiz
         if (!foundLesson.content) {
           setStep("quiz");
+        } else {
+          // Resetear a "reading" cuando cambia la lección
+          setStep("reading");
         }
       } else {
         // Lección no encontrada, redirigir a niveles
@@ -93,6 +97,11 @@ export default function LessonView({ mode }) {
   }
 
   // Etapa de quiz
+  // Validar que la lección tenga preguntas antes de mostrar el quiz
+  if (!lesson.questions || lesson.questions.length === 0) {
+    return <div className="loading">Cargando lección...</div>;
+  }
+  
   return <QuizFromLesson lesson={lesson} level={level} mode={mode} />;
 }
 

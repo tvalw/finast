@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import QuestionCard from './QuestionCard.jsx';
 import CelebrationModal from './CelebrationModal.jsx';
-import LevelFeedbackModal from './LevelFeedbackModal.jsx';
 import { levels } from '../data/levels.js';
 import { 
   addPoints, 
   markLessonCompleted
 } from '../utils/storage.js';
-import { checkAndUnlockNextLevel, isLevelCompleted } from '../utils/progress.js';
+import { checkAndUnlockNextLevel } from '../utils/progress.js';
 
 /**
  * Componente que maneja el quiz de una lección
@@ -27,15 +26,16 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
   const [showCelebration, setShowCelebration] = useState(false);
   const [incorrectQuestions, setIncorrectQuestions] = useState([]); // Índices de preguntas incorrectas
   const [isReviewMode, setIsReviewMode] = useState(false); // Modo de repaso de preguntas incorrectas
-  const [questionsToShow, setQuestionsToShow] = useState(lesson.questions); // Preguntas que se están mostrando actualmente
+  const [questionsToShow, setQuestionsToShow] = useState(lesson?.questions || []); // Preguntas que se están mostrando actualmente
   const [levelUnlocked, setLevelUnlocked] = useState(null); // Nivel desbloqueado (para notificación)
   const [showLevelUnlockedNotification, setShowLevelUnlockedNotification] = useState(false);
   const [questionKey, setQuestionKey] = useState(0); // Key para forzar reset del QuestionCard
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false); // Modal de feedback
-  const [levelJustCompleted, setLevelJustCompleted] = useState(false); // Si el nivel se acaba de completar
 
   // Reiniciar estado cuando cambia la lección
   useEffect(() => {
+    if (!lesson || !lesson.questions) {
+      return;
+    }
     setCurrentQuestionIndex(0);
     setCompleted(false);
     setPointsEarned(0);
@@ -43,28 +43,37 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
     setIncorrectQuestions([]);
     setIsReviewMode(false);
     setQuestionsToShow(lesson.questions);
-  }, [lessonId]);
+  }, [lessonId, lesson]);
 
   // Actualizar preguntas a mostrar cuando cambian las incorrectas en modo repaso
+  // Solo se ejecuta cuando se entra al modo repaso inicialmente, no en cada actualización
   useEffect(() => {
-    if (isReviewMode && !completed) {
-      if (incorrectQuestions.length > 0) {
-        const incorrectQuestionsList = incorrectQuestions.map(idx => lesson.questions[idx]);
-        setQuestionsToShow(incorrectQuestionsList);
-        // Si el índice actual es mayor que el nuevo tamaño, resetearlo
-        setCurrentQuestionIndex(prev => {
-          if (prev >= incorrectQuestionsList.length) {
-            return 0;
-          }
-          return prev;
-        });
-      } else if (incorrectQuestions.length === 0) {
-        // No quedan incorrectas, completar lección
-        completeLesson();
-      }
+    if (!lesson || !lesson.questions || completed) {
+      return;
+    }
+    if (isReviewMode && incorrectQuestions.length > 0) {
+      const incorrectQuestionsList = incorrectQuestions.map(idx => lesson.questions[idx]);
+      setQuestionsToShow(incorrectQuestionsList);
+      // Asegurar que el índice sea válido
+      setCurrentQuestionIndex(prev => {
+        if (prev >= incorrectQuestionsList.length) {
+          return 0;
+        }
+        return prev;
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [incorrectQuestions, isReviewMode, lesson.questions]);
+  }, [isReviewMode, lesson]);
+
+  // Validar y corregir el índice cuando questionsToShow cambia en modo repaso
+  useEffect(() => {
+    if (isReviewMode && questionsToShow.length > 0) {
+      const maxIndex = questionsToShow.length - 1;
+      if (currentQuestionIndex > maxIndex) {
+        setCurrentQuestionIndex(0);
+      }
+    }
+  }, [isReviewMode, questionsToShow.length, currentQuestionIndex]);
 
   const handleAnswer = (isCorrect, explanation) => {
     const currentQuestion = isReviewMode ? questionsToShow[currentQuestionIndex] : lesson.questions[currentQuestionIndex];
@@ -89,20 +98,27 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
       
       // Si está en modo repaso, remover la pregunta de las incorrectas
       if (isReviewMode) {
-        setIncorrectQuestions(prev => prev.filter(idx => idx !== originalIndex));
-        
-        // En modo repaso, solo avanzar si la respuesta es correcta
-        setTimeout(() => {
-          // Verificar si hay más preguntas en la lista actual
-          if (currentQuestionIndex < questionsToShow.length - 1) {
-            setCurrentQuestionIndex(prev => prev + 1);
-          } else {
-            // Terminó de revisar todas las incorrectas actuales
-            // El useEffect se encargará de actualizar questionsToShow con las que aún quedan
-            // Si no quedan incorrectas, el useEffect llamará a completeLesson
-            setCurrentQuestionIndex(0);
+        setIncorrectQuestions(prev => {
+          const updated = prev.filter(idx => idx !== originalIndex);
+          
+          // Si no quedan incorrectas, completar lección después del delay
+          if (updated.length === 0) {
+            setTimeout(() => {
+              completeLesson();
+            }, 2000);
+            return updated;
           }
-        }, 2000);
+          
+          // Si aún hay incorrectas, actualizar questionsToShow y el índice
+          setTimeout(() => {
+            const remainingQuestions = updated.map(idx => lesson.questions[idx]);
+            setQuestionsToShow(remainingQuestions);
+            // Resetear el índice a 0 ya que removimos una pregunta
+            setCurrentQuestionIndex(0);
+          }, 2000);
+          
+          return updated;
+        });
       } else {
         // Modo normal - avanzar a la siguiente pregunta
         setTimeout(() => {
@@ -190,9 +206,6 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
     const nextLevelId = currentLevelId + 1;
     const wasUnlocked = checkAndUnlockNextLevel(currentLevelId);
     
-    // Verificar si el nivel se acaba de completar
-    const levelCompleted = isLevelCompleted(currentLevelId);
-    
     // Si se desbloqueó un nuevo nivel, mostrar notificación
     if (wasUnlocked) {
       const nextLevel = levels.find(l => l.id === nextLevelId);
@@ -204,15 +217,6 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
           setShowLevelUnlockedNotification(false);
         }, 5000);
       }
-    }
-    
-    // Si el nivel se completó, mostrar modal de feedback después de un breve delay
-    if (levelCompleted) {
-      setLevelJustCompleted(true);
-      // Mostrar feedback después de que se muestre la celebración
-      setTimeout(() => {
-        setShowFeedbackModal(true);
-      }, 1500);
     }
     
     // Mostrar modal de celebración
@@ -288,19 +292,6 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
           mode={mode}
         />
         
-        {/* Modal de feedback cuando se completa un nivel */}
-        {levelJustCompleted && currentLevel && (
-          <LevelFeedbackModal
-            isOpen={showFeedbackModal}
-            onClose={() => {
-              setShowFeedbackModal(false);
-              setLevelJustCompleted(false);
-            }}
-            levelId={parseInt(levelId)}
-            levelTitle={currentLevel.title}
-          />
-        )}
-        
         {/* Notificación de nivel desbloqueado */}
         {showLevelUnlockedNotification && levelUnlocked && (
           <div className="level-unlocked-notification">
@@ -322,54 +313,141 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
         
         <div className="lesson-completed">
           <div className="completion-card">
-            <h2>✅ ¡Lección Completada!</h2>
-            {pointsEarned > 0 && (
-              <p>
-                Has ganado {pointsEarned} puntos
-                {mode === 'competitive' && ' ⚡ (Modo competitivo: puntos extra)'}
-                {mode === 'relaxed' && ' 🌿 (Modo relajado)'}
-                {mode === 'learning' && ' 📘 (Modo aprendizaje)'}
-              </p>
-            )}
-            {pointsEarned === 0 && (
-              <>
-                {mode === 'relaxed' && (
-                  <p>¡Lección completada! Aprendiste sin presión 🎉</p>
-                )}
-                {mode === 'learning' && (
-                  <p>¡Lección completada! Esperamos que hayas aprendido mucho 📘</p>
-                )}
-              </>
-            )}
-            <div className="completion-actions">
-              <button className="btn btn-primary" onClick={handleNextLesson}>
-                Siguiente lección
-              </button>
-              <button className="btn btn-secondary" onClick={handleRepeatLesson}>
-                🔄 Repetir lección
-              </button>
-              <button className="btn btn-secondary" onClick={handleBackToLevels}>
-                Volver a niveles
-              </button>
-            </div>
+            {(() => {
+              // Verificar si es la última lección del nivel
+              const currentLevelId = parseInt(levelId);
+              const currentLevel = levels.find(l => l.id === currentLevelId);
+              const currentLessonIndex = currentLevel?.lessons.findIndex(l => l.id === lessonId);
+              const isLastLesson = currentLevel && currentLessonIndex === currentLevel.lessons.length - 1;
+              const nextLevel = levels.find(l => l.id === currentLevelId + 1);
+              const hasNextLevel = nextLevel && nextLevel.lessons.length > 0;
+
+              if (isLastLesson) {
+                // Es la última lección del nivel
+                return (
+                  <>
+                    <h2>🎉 ¡Nivel Completado!</h2>
+                    <p className="level-completed-message">
+                      Has completado todas las lecciones del {currentLevel.title}
+                    </p>
+                    {pointsEarned > 0 && (
+                      <p>
+                        Has ganado {pointsEarned} puntos
+                        {mode === 'competitive' && ' ⚡ (Modo competitivo: puntos extra)'}
+                        {mode === 'relaxed' && ' 🌿 (Modo relajado)'}
+                        {mode === 'learning' && ' 📘 (Modo aprendizaje)'}
+                      </p>
+                    )}
+                    {pointsEarned === 0 && (
+                      <>
+                        {mode === 'relaxed' && (
+                          <p>¡Nivel completado! Aprendiste sin presión 🎉</p>
+                        )}
+                        {mode === 'learning' && (
+                          <p>¡Nivel completado! Esperamos que hayas aprendido mucho 📘</p>
+                        )}
+                      </>
+                    )}
+                    <div className="completion-actions">
+                      {hasNextLevel && (
+                        <button 
+                          className="btn btn-primary" 
+                          onClick={() => {
+                            const firstLessonOfNextLevel = nextLevel.lessons[0];
+                            navigate(`/lesson/${nextLevel.id}/${firstLessonOfNextLevel.id}`);
+                          }}
+                        >
+                          Pasar al siguiente nivel
+                        </button>
+                      )}
+                      <button className="btn btn-secondary" onClick={handleRepeatLesson}>
+                        🔄 Repetir lección
+                      </button>
+                      <button className="btn btn-secondary" onClick={handleBackToLevels}>
+                        Volver a niveles
+                      </button>
+                    </div>
+                  </>
+                );
+              } else {
+                // No es la última lección
+                return (
+                  <>
+                    <h2>✅ ¡Lección Completada!</h2>
+                    {pointsEarned > 0 && (
+                      <p>
+                        Has ganado {pointsEarned} puntos
+                        {mode === 'competitive' && ' ⚡ (Modo competitivo: puntos extra)'}
+                        {mode === 'relaxed' && ' 🌿 (Modo relajado)'}
+                        {mode === 'learning' && ' 📘 (Modo aprendizaje)'}
+                      </p>
+                    )}
+                    {pointsEarned === 0 && (
+                      <>
+                        {mode === 'relaxed' && (
+                          <p>¡Lección completada! Aprendiste sin presión 🎉</p>
+                        )}
+                        {mode === 'learning' && (
+                          <p>¡Lección completada! Esperamos que hayas aprendido mucho 📘</p>
+                        )}
+                      </>
+                    )}
+                    <div className="completion-actions">
+                      <button className="btn btn-primary" onClick={handleNextLesson}>
+                        Siguiente lección
+                      </button>
+                      <button className="btn btn-secondary" onClick={handleRepeatLesson}>
+                        🔄 Repetir lección
+                      </button>
+                      <button className="btn btn-secondary" onClick={handleBackToLevels}>
+                        Volver a niveles
+                      </button>
+                    </div>
+                  </>
+                );
+              }
+            })()}
           </div>
         </div>
       </>
     );
   }
 
+  // Validar que lesson y questions existan
+  if (!lesson || !lesson.questions || lesson.questions.length === 0) {
+    return <div className="loading">Cargando lección...</div>;
+  }
+
+  // Si estamos en modo repaso y no hay más preguntas incorrectas, completar lección
+  if (isReviewMode && incorrectQuestions.length === 0 && !completed) {
+    return <div className="loading">Completando lección...</div>;
+  }
+
+  // Validar que questionsToShow tenga contenido en modo repaso
+  if (isReviewMode && questionsToShow.length === 0 && incorrectQuestions.length > 0) {
+    return <div className="loading">Cargando pregunta...</div>;
+  }
+
+  // Validar que el índice sea válido
+  const maxIndex = isReviewMode ? questionsToShow.length - 1 : lesson.questions.length - 1;
+  const validIndex = currentQuestionIndex > maxIndex ? 0 : currentQuestionIndex;
+
   const currentQuestion = isReviewMode 
-    ? questionsToShow[currentQuestionIndex] 
-    : lesson.questions[currentQuestionIndex];
+    ? (questionsToShow.length > 0 ? questionsToShow[validIndex] : null)
+    : lesson.questions[validIndex];
   
   const totalQuestions = isReviewMode 
     ? questionsToShow.length 
     : lesson.questions.length;
   
-  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  const progress = totalQuestions > 0 ? ((validIndex + 1) / totalQuestions) * 100 : 0;
 
-  // Si no hay pregunta actual, mostrar loading
-  if (!currentQuestion) {
+  // Si no hay pregunta actual y no estamos completando, mostrar loading
+  if (!currentQuestion && !completed) {
+    // Si estamos en modo repaso y questionsToShow está vacío, significa que terminamos
+    if (isReviewMode && questionsToShow.length === 0) {
+      return <div className="loading">Completando lección...</div>;
+    }
     return <div className="loading">Cargando pregunta...</div>;
   }
 
@@ -406,7 +484,7 @@ export default function QuizFromLesson({ lesson, level, mode = 'competitive' }) 
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <p>Pregunta {currentQuestionIndex + 1} de {totalQuestions}</p>
+        <p>Pregunta {validIndex + 1} de {totalQuestions}</p>
       </div>
       
       <QuestionCard 
