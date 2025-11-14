@@ -1132,7 +1132,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  z-index: 1000;
+  z-index: 998;
   max-width: 280px;
   pointer-events: none;
 }
@@ -1786,7 +1786,8 @@ body {
   .badge-item {
     min-width: 80px;
     max-width: 80px;
-    padding: 0.65rem 0.4rem;
+    min-height: 90px;
+    padding: 0.75rem 0.5rem;
     scroll-snap-align: start;
     flex-shrink: 0;
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
@@ -1798,6 +1799,7 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 6px rgba(234, 179, 8, 0.2);
+    text-align: center;
   }
 
   .badge-item:active {
@@ -1811,21 +1813,27 @@ body {
   }
 
   .badge-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.35rem;
-    display: block;
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    flex-shrink: 0;
   }
 
   .badge-name {
-    font-size: 0.65rem;
-    line-height: 1.15;
+    font-size: 0.7rem;
+    line-height: 1.2;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     hyphens: auto;
     display: block;
     text-align: center;
     font-weight: 600;
     color: #78350f;
+    width: 100%;
+    max-width: 100%;
   }
 
   .badge-item.locked .badge-name {
@@ -2105,56 +2113,62 @@ body {
   .floating-widgets {
     position: fixed;
     bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
-    max-width: 100%;
-    flex-direction: row;
-    gap: 0.75rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+    right: 0.75rem;
+    left: auto;
+    max-width: 140px;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow: visible;
+    padding-bottom: 0;
   }
 
   .floating-widgets::-webkit-scrollbar {
-    height: 4px;
+    display: none;
   }
 
   .floating-widget {
     flex-shrink: 0;
-    min-width: 260px;
-    max-width: 280px;
+    min-width: 140px;
+    max-width: 140px;
+    width: 140px;
   }
 
   .floating-challenge .daily-challenge-content {
-    min-width: 260px;
+    min-width: 100%;
+    width: 100%;
+    padding: 0.6rem;
   }
 
   /* Ajustes específicos para desafío del día en mobile */
   .challenge-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .challenge-header h3 {
-    font-size: 1.2rem;
+    font-size: 0.85rem;
     width: 100%;
+    line-height: 1.2;
   }
 
-  .time-left {
+  .floating-challenge .time-left {
     width: 100%;
     text-align: center;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .floating-challenge .challenge-description {
+    font-size: 0.7rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+
+  .floating-challenge .challenge-button {
     padding: 0.5rem 0.75rem;
-    font-size: 0.85rem;
-  }
-
-  .challenge-description {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-
-  .challenge-button {
-    padding: 0.85rem 1.25rem;
-    font-size: 0.95rem;
+    font-size: 0.7rem;
     width: 100%;
     box-sizing: border-box;
   }
@@ -2172,16 +2186,34 @@ body {
   }
 
   .widget-header {
-    padding: 0.6rem 0.85rem;
+    padding: 0.5rem 0.6rem;
   }
 
   .widget-title {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .widget-toggle {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .floating-widget.minimized {
+    max-height: 40px;
   }
 
   .quick-action-compact {
-    padding: 0.55rem 0.85rem;
-    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .quick-icon {
+    font-size: 1.2rem;
+  }
+
+  .quick-label {
+    font-size: 0.7rem;
   }
 }
 
@@ -2278,17 +2310,18 @@ body {
   .badge-item {
     min-width: 70px;
     max-width: 70px;
-    padding: 0.55rem 0.35rem;
+    min-height: 80px;
+    padding: 0.65rem 0.4rem;
   }
 
   .badge-icon {
-    font-size: 1.35rem;
-    margin-bottom: 0.3rem;
+    font-size: 1.4rem;
+    margin-bottom: 0.35rem;
   }
 
   .badge-name {
-    font-size: 0.6rem;
-    line-height: 1.1;
+    font-size: 0.65rem;
+    line-height: 1.15;
   }
 
   .achievements-section::after {
@@ -2310,51 +2343,75 @@ body {
 
   .floating-widgets {
     flex-direction: column;
-    left: 0.5rem;
+    left: auto;
     right: 0.5rem;
     bottom: 0.5rem;
+    max-width: 120px;
   }
 
   .floating-widget {
-    min-width: 100%;
-    width: 100%;
-    max-width: 100%;
+    min-width: 120px;
+    max-width: 120px;
+    width: 120px;
   }
 
   .floating-challenge .daily-challenge-content {
     min-width: 100%;
     width: 100%;
+    padding: 0.5rem;
   }
 
   .challenge-header h3 {
-    font-size: 1.1rem;
-  }
-
-  .time-left {
     font-size: 0.8rem;
-    padding: 0.4rem 0.6rem;
+    line-height: 1.15;
   }
 
-  .challenge-description {
-    font-size: 0.85rem;
+  .floating-challenge .time-left {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.45rem;
+    margin-bottom: 0.4rem;
   }
 
-  .challenge-button {
-    font-size: 0.9rem;
-    padding: 0.75rem 1rem;
+  .floating-challenge .challenge-description {
+    font-size: 0.65rem;
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+  }
+
+  .floating-challenge .challenge-button {
+    font-size: 0.65rem;
+    padding: 0.45rem 0.65rem;
   }
 
   .widget-header {
-    padding: 0.5rem 0.75rem;
+    padding: 0.45rem 0.5rem;
   }
 
   .widget-title {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
+    line-height: 1.15;
+  }
+
+  .widget-toggle {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.35rem;
+  }
+
+  .floating-widget.minimized {
+    max-height: 35px;
   }
 
   .quick-action-compact {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .quick-icon {
+    font-size: 1rem;
+  }
+
+  .quick-label {
+    font-size: 0.65rem;
   }
 }
 
