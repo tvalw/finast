@@ -52,7 +52,7 @@ export default function BadgeCarousel() {
     }
   ];
 
-  // Mostrar solo las primeras 6 insignias (3 desbloqueadas + 3 bloqueadas)
+  // Mostrar todas las insignias (se limitará visualmente en CSS para móvil)
   const recentBadges = allBadges.slice(0, 6);
 
   return (

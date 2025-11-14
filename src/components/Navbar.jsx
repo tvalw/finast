@@ -127,8 +127,10 @@ export default function Navbar() {
           </div>
           
           <div className="navbar-controls">
-            {/* Toggle de tema */}
-            <ThemeToggle />
+            {/* Toggle de tema - solo visible en desktop */}
+            <div className="desktop-theme-toggle">
+              <ThemeToggle />
+            </div>
             
             {/* Puntos */}
             <div className="navbar-points">
@@ -198,7 +200,10 @@ export default function Navbar() {
             <div className="mobile-menu-points">
               {progress.points} puntos
             </div>
-            <ThemeToggle />
+            <div className="mobile-menu-theme-toggle">
+              <div className="mobile-menu-theme-label">Tema</div>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>
