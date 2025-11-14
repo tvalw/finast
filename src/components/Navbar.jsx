@@ -51,7 +51,7 @@ export default function Navbar() {
           onClick={handleLogoClick}
           title="Doble clic para modo desarrollador"
         >
-          💰 Finast
+          Finast
         </Link>
         
         <div className="navbar-links">
@@ -65,7 +65,7 @@ export default function Navbar() {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               aria-expanded={dropdownOpen}
             >
-              📚 Herramientas
+              Herramientas
               <span className="dropdown-arrow">{dropdownOpen ? '▲' : '▼'}</span>
             </button>
             {dropdownOpen && (
@@ -75,28 +75,27 @@ export default function Navbar() {
                   className="dropdown-item"
                   onClick={() => setDropdownOpen(false)}
                 >
-                  📄 Recursos
+                  Recursos
                 </Link>
                 <Link 
                   to="/glossary" 
                   className="dropdown-item"
                   onClick={() => setDropdownOpen(false)}
                 >
-                  📘 Diccionario
+                  Diccionario
                 </Link>
                 <Link 
                   to="/simulator" 
                   className="dropdown-item"
                   onClick={() => setDropdownOpen(false)}
                 >
-                  💰 Simulador
+                  Simulador
                 </Link>
               </div>
             )}
           </div>
           
-          <Link to="/shop" className="navbar-link">🛍️ Tienda</Link>
-          <Link to="/mode" className="navbar-link">⚙️ Modo</Link>
+          <Link to="/shop" className="navbar-link">Tienda</Link>
           <Link to="/profile" className="navbar-link">Perfil</Link>
           <Link to="/community" className="navbar-link">Comunidad</Link>
         </div>
@@ -107,7 +106,7 @@ export default function Navbar() {
           
           {/* Puntos */}
           <div className="navbar-points">
-            ⭐ {progress.points} puntos
+            {progress.points} puntos
           </div>
         </div>
       </div>

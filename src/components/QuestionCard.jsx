@@ -15,6 +15,7 @@ export default function QuestionCard({ question, onAnswer, mode = 'competitive' 
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false); // Para modo aprendizaje
+  const [timeLeft, setTimeLeft] = useState(10); // Temporizador para modo competitivo
 
   // Resetear el estado cuando cambia la pregunta
   useEffect(() => {
@@ -22,7 +23,42 @@ export default function QuestionCard({ question, onAnswer, mode = 'competitive' 
     setShowResult(false);
     setIsCorrect(false);
     setShowAnswer(false);
+    setTimeLeft(10); // Resetear temporizador
   }, [question.id]);
+
+  // Temporizador para modo competitivo
+  useEffect(() => {
+    if (mode !== 'competitive' || showResult) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // Tiempo agotado: marcar como incorrecto y avanzar
+          setIsCorrect(false);
+          setShowResult(true);
+          
+          // Reproducir sonido de error
+          try {
+            const audio = new Audio('/assets/sounds/error.mp3');
+            audio.volume = 0.3;
+            audio.play().catch(() => {});
+          } catch (error) {
+            // Ignorar errores de audio
+          }
+          
+          // Avanzar después de mostrar el resultado
+          setTimeout(() => {
+            onAnswer(false, question.explanation || 'Tiempo agotado');
+          }, 1500);
+          
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [mode, showResult, question.id, onAnswer, question.explanation]);
 
   const handleSelect = (index) => {
     if (showResult) return; // No permitir cambiar respuesta después de responder
@@ -84,6 +120,16 @@ export default function QuestionCard({ question, onAnswer, mode = 'competitive' 
 
   return (
     <div className="question-card">
+      {/* Temporizador para modo competitivo */}
+      {mode === 'competitive' && !showResult && (
+        <div className={`question-timer ${timeLeft <= 3 ? 'timer-warning-container' : ''}`}>
+          <div className={`timer-circle ${timeLeft <= 3 ? 'timer-warning' : ''}`}>
+            <span className="timer-text">{timeLeft}</span>
+          </div>
+          <span className="timer-label">segundos</span>
+        </div>
+      )}
+      
       <h3 className="question-text">{question.question}</h3>
       
       {/* Botón para ver/ocultar respuesta en modo aprendizaje */}
