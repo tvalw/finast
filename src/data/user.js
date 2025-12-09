@@ -6,7 +6,7 @@
  */
 
 export const user = {
-  name: "Vale",
+  name: "Estudiante",
   avatar: "/assets/avatar1.png", // Por defecto, se puede cambiar
   goal: "Aprender a ahorrar e invertir",
   joinedAt: "2025-10-01",
