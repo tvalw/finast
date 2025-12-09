@@ -56,8 +56,15 @@ export default function CelebrationModal({ isOpen, onClose, pointsEarned, levelI
       } catch (error) {
         // Ignorar errores de audio
       }
+      
+      // Cerrar automáticamente después de 30 segundos
+      const timeout = setTimeout(() => {
+        onClose();
+      }, 30000);
+      
+      return () => clearTimeout(timeout);
     }
-  }, [isOpen, levelId, lessonId]);
+  }, [isOpen, levelId, lessonId, onClose]);
 
   if (!isOpen) return null;
 
